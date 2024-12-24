@@ -1,29 +1,50 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
+import React, { useContext, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AuthProvider, { AuthContext } from "./AuthContext/AuthContext";
+import { ThemeProvider, DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import "react-native-reanimated";
-
 import { useColorScheme } from "@/hooks/useColorScheme";
-import React from "react";
-import { ClerkProvider } from "@clerk/clerk-expo";
+import { ActivityIndicator, View } from "react-native";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
+
+function AppContent() {
+  const { token, setToken } = useContext(AuthContext);
   const colorScheme = useColorScheme();
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
-   
+  const [isTokenFetched, setIsTokenFetched] = useState(false);
+
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  useEffect(() => {
+    const fetchUserToken = async () => {
+
+      try {
+        const storedToken = await AsyncStorage.getItem("authToken");
+        if (storedToken) {
+          setToken(storedToken);
+        }
+      } catch (error) {
+        console.error("Error fetching token:", error);
+      }
+
+      setIsTokenFetched(true);
+    };
+
+    fetchUserToken();
+  }, []);
 
   useEffect(() => {
     if (loaded) {
@@ -31,15 +52,18 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
+  if (!isTokenFetched || !loaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
+
   return (
-    <ClerkProvider publishableKey={publishableKey}>
     <ThemeProvider value={colorScheme === "light" ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName="SplashScreen">
-        <Stack.Screen name="SplashScreen" options={{ headerShown: false }} />
+      <Stack initialRouteName={token === null ? "(auth)" : "(tabs)"}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="Listings" options={{ headerShown: false }} />
@@ -48,6 +72,5 @@ export default function RootLayout() {
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
-    </ClerkProvider>
   );
 }

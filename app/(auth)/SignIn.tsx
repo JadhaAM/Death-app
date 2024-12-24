@@ -6,21 +6,28 @@ import {
     TouchableOpacity,
     StyleSheet,
     Alert,
+    ActivityIndicator,
+    GestureResponderEvent,
 } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
-import CheckBox from 'expo-checkbox';
+import { Switch } from 'react-native';
 import { useRouter } from 'expo-router';
-import AuthContext from '../AuthContext/AuthContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../AuthContext/AuthContext';
+
 
 const SignIn = () => {
+    const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
     const router = useRouter();
-    const { login, ContinueWithGoogle } = useContext(AuthContext);
+    const { token, setToken } = useContext(AuthContext);
     const [isChecked, setIsChecked] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const toggleSwitch = () => setIsChecked(previousState => !previousState);
 
-    // Form Validation Schema using Yup
     const validationSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Email is required'),
         password: Yup.string()
@@ -28,17 +35,43 @@ const SignIn = () => {
             .required('Password is required'),
     });
 
-    const handleSignIn = async (values: { email: string; password: string }) => {
+
+    const handleSubmit = async (values: { email: any; password: any; }) => {
+        if (!isChecked) {
+            Alert.alert("Error", "You must accept Terms and Conditions.");
+            return;
+        }
+        setIsLoading(true);
         try {
-            await login(values.email, values.password);
-            Alert.alert('Success', 'Logged in successfully!');
-            router.push('/(tabs)/home');
-        } catch (error) {
-            Alert.alert("user not found ");
+
+            const response = await axios.post(`${apiUrl}/api/user/login`, {
+                email: values.email,
+                password: values.password,
+            });
+
+            if (response.status === 200) {
+                Alert.alert("Success", "Logged in successfully!");
+                AsyncStorage.setItem('authToken', response.data.token);
+                setToken(response.data.token);
+                router.push("/(tabs)/home");
+            } else if (response.status === 400) {
+                Alert.alert("Error", response.data.message || "An error occurred.");
+            } else {
+                Alert.alert("Error", "Failed to log in. Please try again.");
+            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || error.message || "An error occurred during log in.";
+            Alert.alert("Error", errorMessage);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-   
+    const handleGoogleLogin = () => {
+        window.location.href = `${apiUrl}/api/user/google`;
+    };
+
+
 
     return (
         <View style={styles.container}>
@@ -51,11 +84,10 @@ const SignIn = () => {
             <Formik
                 initialValues={{ email: '', password: '' }}
                 validationSchema={validationSchema}
-                onSubmit={handleSignIn}
+                onSubmit={handleSubmit}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                     <>
-                        {/* Email Input */}
                         <Text style={styles.label}>Email address</Text>
                         <TextInput
                             style={styles.input}
@@ -69,7 +101,6 @@ const SignIn = () => {
                             <Text style={styles.errorText}>{errors.email}</Text>
                         )}
 
-                        {/* Password Input */}
                         <Text style={styles.label}>Password</Text>
                         <View style={styles.passwordContainer}>
                             <TextInput
@@ -99,21 +130,26 @@ const SignIn = () => {
                         {/* Remember Me & Forgot Password */}
                         <View style={styles.optionsContainer}>
                             <View style={styles.rememberMeContainer}>
-                                <CheckBox
+                                <Switch
                                     value={isChecked}
-                                    onValueChange={setIsChecked}
-                                    tintColors={{ true: '#000', false: '#A1A1A1' }}
+                                    onValueChange={toggleSwitch}
+                                    trackColor={{ false: '#767577', true: '#81b0ff' }}
+                                    thumbColor={isChecked ? '#f5dd4b' : '#f4f3f4'}
                                 />
                                 <Text style={styles.rememberText}>Remember me</Text>
                             </View>
-                            <TouchableOpacity >
-                                <Text style={styles.forgotText} onPress={()=>router.push("/(auth)/PasswordRecovery")}>Forgot password?</Text>
+                            <TouchableOpacity onPress={() => router.push("/(auth)/Email")}>
+                                <Text style={styles.forgotText}>Forgot password?</Text>
                             </TouchableOpacity>
                         </View>
 
                         {/* Log In Button */}
-                        <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
-                            <Text style={styles.loginButtonText}>Log in</Text>
+                        <TouchableOpacity style={styles.loginButton} onPress={handleSubmit as unknown as (event: GestureResponderEvent) => void} disabled={isLoading}>
+                            {isLoading ? (
+                                <ActivityIndicator size="small" color="#FFFFFF" />
+                            ) : (
+                                <Text style={styles.loginButtonText}>Log in</Text>
+                            )}
                         </TouchableOpacity>
                     </>
                 )}
@@ -134,7 +170,7 @@ const SignIn = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.socialButton}
-                    onPress={()=>ContinueWithGoogle()}
+                    onPress={handleGoogleLogin as unknown as (event: GestureResponderEvent) => void}
                 >
                     <FontAwesome name="google" size={20} color="#DB4437" />
                     <Text style={styles.socialButtonText}>Google</Text>
@@ -142,13 +178,8 @@ const SignIn = () => {
             </View>
 
             {/* Login with Phone */}
-            <TouchableOpacity style={styles.phoneButton}>
-                <Text
-                    style={styles.phoneButtonText}
-                    onPress={() => router.push('/(auth)/loginWithPhone')}
-                >
-                    Login with Phone
-                </Text>
+            <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/loginWithPhone')}>
+                <Text style={styles.phoneButtonText}>Login with Phone</Text>
             </TouchableOpacity>
 
             {/* Sign Up */}

@@ -3,8 +3,9 @@ import TopBar from "@/components/TopBar/TopBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Services from "@/components/Services/Services";
 import TopResultsList from "@/components/TopResultsList/TopResultsList";
+import React from "react";
 
-export default function HomeScreen() {
+const home =()=>{
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -79,3 +80,5 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
 });
+
+export default  home;

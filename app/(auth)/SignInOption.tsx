@@ -6,18 +6,18 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  GestureResponderEvent,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import  AuthContext  from '../AuthContext/AuthContext';
-import { Try } from 'expo-router/build/views/Try';
-
 
 const LoginScreen = () => {
-  const {ContinueWithGoogle}= useContext(AuthContext);
+  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
   const router = useRouter();
 
- 
+  const handleGoogleLogin = () => {
+    window.location.href = `${apiUrl}/api/user/google`;
+};
 
   return (
     <View style={styles.container}>
@@ -40,7 +40,7 @@ const LoginScreen = () => {
       {/* Social Login Buttons */}
       <View style={styles.buttonContainer}>
         {/* Google */}
-        <TouchableOpacity style={styles.socialButton} onPress={()=>ContinueWithGoogle()}>
+        <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin as unknown as (event: GestureResponderEvent) => void} >
           <FontAwesome name="google" size={20} color="#DB4437" />
           <Text style={styles.socialButtonText} >Continue with Google</Text>
         </TouchableOpacity>

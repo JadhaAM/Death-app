@@ -1,233 +1,193 @@
-import React, { useState, useEffect, useContext, useRef } from "react";  
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";  
-import CountryPicker from 'react-native-country-picker-modal';  
-import AuthContext from "../AuthContext/AuthContext";  
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from "react-native";
+import { Picker } from '@react-native-picker/picker';
+import CountryFlag from 'react-native-country-flag';
+import axios from "axios";
 
-const LoginWithPhone = () => {  
-  const { sendOTP, verifyOTP } = useContext(AuthContext);  
-  const [step, setStep] = useState(1);  
-  const [phoneNumber, setPhoneNumber] = useState("");  
-  const [otp, setOtp] = useState(Array(6).fill("")); // Array to hold OTP digits  
-  const otpRefs = useRef<(TextInput | null)[]>(Array(6).fill(null));  
-  const [wrongOtp, setWrongOtp] = useState(false);  
-  const [resendTimer, setResendTimer] = useState(20);  
-  const [countryCode, setCountryCode] = useState<'FR' | 'US' | 'IN'>('FR'); // Example with specific values  
-  const [callingCode, setCallingCode] = useState('+33');   
+const LoginWithPhone = () => {
+  const [step, setStep] = useState(1);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
+  const otpRefs = useRef<(TextInput | null)[]>(Array(6).fill(null));
+  const [wrongOtp, setWrongOtp] = useState(false);
+  const [resendTimer, setResendTimer] = useState(20);
+  const [selectedCountry, setSelectedCountry] = useState("FR");
+  const [callingCode, setCallingCode] = useState("+33");
+  const [userId, setUserId] = useState("");
+  const [secret, setSecret] = useState("");
+  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {  
-    let timer: NodeJS.Timeout | undefined;  
-    if (step === 2 && resendTimer > 0) {  
-      timer = setInterval(() => setResendTimer(prev => prev - 1), 1000);  
-    }  
-    return () => clearInterval(timer);  
-  }, [step, resendTimer]);  
-  
-  // Handle Sending OTP  
-  const handleSendOTP = async (phoneNumber: string) => {  
-    if (!phoneNumber || phoneNumber.length < 1) {  
-      alert("Please enter your phone number.");  
-      return;  
-    }  
-  
-    const formattedPhoneNumber = `${callingCode} ${phoneNumber.replace(/\s+/g, '')}`;  
-    console.log("Formatted Phone Number:", formattedPhoneNumber);  
-  
-    if (formattedPhoneNumber.length > 16) {  
-      alert("Phone number must be a maximum of 15 digits including the country code.");  
-      return;  
-    }  
-  
-    try {  
-     const respons= await sendOTP(formattedPhoneNumber);  
-      setOtp(Array(6).fill("")); // Reset OTP input  
-      setStep(2); // Move to OTP input step  
-      setResendTimer(20); // Reset resend timer  
-      alert("OTP sent! Please check your messages."); 
-      console.log(respons);
-       
-    } catch (error) {  
-      alert("Error sending OTP. Please try again.");   
-    }  
-    
-  };  
+  const countryList = [
+    { code: "FR", name: "France", callingCode: "+33" },
+    { code: "US", name: "United States", callingCode: "+1" },
+    { code: "IN", name: "India", callingCode: "+91" },
+    { code: "GB", name: "United Kingdom", callingCode: "+44" },
+    { code: "DE", name: "Germany", callingCode: "+49" },
+    { code: "CA", name: "Canada", callingCode: "+1" },
+    { code: "AU", name: "Australia", callingCode: "+61" },
+    { code: "JP", name: "Japan", callingCode: "+81" },
+    { code: "CN", name: "China", callingCode: "+86" },
+    { code: "BR", name: "Brazil", callingCode: "+55" },
+  ];
 
-  const handleOTPSubmit =  async() => {  
-    const otpCode = otp.join(""); // Join the OTP array into a single string  
-    console.log(otpCode);
-    
-   const respons= await verifyOTP(); 
-      console.log(respons);
+  const handleCountryChange = (countryCode: string) => {
+    const country = countryList.find((c) => c.code === countryCode);
+    if (country) {
+      setSelectedCountry(countryCode);
+      setCallingCode(country.callingCode);
+    }
+  };
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+    if (step === 2 && resendTimer > 0) {
+      timer = setInterval(() => setResendTimer((prev) => prev - 1), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [step, resendTimer]);
+
+  const handleSendOTP = async (phoneNumber: string): Promise<void> => {
+    const formattedPhoneNumber = `${callingCode}${phoneNumber.replace(/\s+/g, "")}`;
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${apiUrl}/send-otp`, { phoneNumber: formattedPhoneNumber });
+      setUserId(response.data.userId);
+      setSecret(response.data.secret);
+      setOtp(Array(6).fill(""));
+      setStep(2);
+      setResendTimer(20);
+      alert("OTP sent! Please check your messages.");
+    } catch (error) {
+      alert("Error sending OTP. Please try again.");
+    } finally {
+      setIsLoading(false);  
+    }
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (/^[0-9]$/.test(value) || value === "") {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+
+      if (value && index < otp.length - 1) {
+        otpRefs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleOTPSubmit = async (): Promise<void> => {
+    const otpString = otp.join("");
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${apiUrl}/verify-otp`, {
+        userId,
+        secret,
+        otp: otpString,
+      }); 
+      Alert.alert("OTP verified successfully!");
       
-        alert("Phone Verified Successfully!");  
-        
-     
-  };  
+    } catch (error) {
+      setWrongOtp(true);
+    } finally {
+      setIsLoading(false); 
+    }
+  };
 
-  const handleResendCode = () => {  
-    setResendTimer(20);  
-    setWrongOtp(false);  
-    setOtp(Array(6).fill(""));  
-    sendOTP(phoneNumber);  
-  };  
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {step === 1 ? (
+        <View>
+          <Text style={styles.header}>Log in</Text>
+          <Text style={styles.subtext}>Please confirm your country code and enter your phone number.</Text>
+          <View style={styles.dropdown}>
+            <Picker
+              selectedValue={selectedCountry}
+              onValueChange={(itemValue) => handleCountryChange(itemValue)}
+            >
+              {countryList.map((country) => (
+                <Picker.Item key={country.code} label={`${country.name} (${country.callingCode})`} value={country.code} />
+              ))}
+            </Picker>
+          </View>
 
-  const handleOtpChange = (index: number, value: string) => {  
-    const newOtp = [...otp];  
-    newOtp[index] = value.slice(0, 1); // Only accept one character  
-    setOtp(newOtp);  
+          {/* Show the selected country flag and calling code */}
+          <View style={styles.flagAndText}>
+            <CountryFlag isoCode={selectedCountry} size={24} />
+            <Text style={styles.flagText}>{callingCode}</Text>
+          </View>
 
-    // Move focus to the next input if current is filled  
-    if (newOtp[index] && index < otp.length - 1) {  
-        otpRefs.current[index + 1]?.focus(); // Use the ref to focus on the next input  
-    }  
-}; 
+          <View style={styles.phoneContainer}>
+            <TextInput
+              style={styles.countryCode}
+              value={callingCode}
+              editable={false}
+            />
+            <TextInput
+              style={styles.phoneInput}
+              placeholder="Phone Number"
+              keyboardType="phone-pad"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              maxLength={15} 
+            />
+          </View>
 
-  return (  
-    <ScrollView contentContainerStyle={styles.container}>  
-      {step === 1 ? (  
-        <View>  
-          <Text style={styles.header}>Log in</Text>  
-          <Text style={styles.subtext}>  
-            Please confirm your country code and enter your phone number.  
-          </Text>  
-          <CountryPicker  
-            containerButtonStyle={styles.phoneContainer}  
-            countryCode={countryCode}  
-            withFlag  
-            withCountryNameButton  
-            withCallingCode  
-            onSelect={(country) => {  
-              setCountryCode(country.cca2);  
-              setCallingCode(`+${country.callingCode[0]}`);  
-            }}  
-          />  
-          <View style={styles.phoneContainer}>  
-            <TextInput  
-              style={styles.countryCode}  
-              value={callingCode}  
-              editable={false}  
-            />  
-            <TextInput  
-              style={styles.phoneInput}  
-              placeholder="Phone Number"  
-              keyboardType="phone-pad"  
-              value={phoneNumber}  
-              onChangeText={setPhoneNumber}  
-            />  
-          </View>  
-          <TouchableOpacity style={styles.button} onPress={() => handleSendOTP(phoneNumber)} disabled={!phoneNumber}>  
-            <Text style={styles.buttonText}>Continue</Text>  
-          </TouchableOpacity>  
-        </View>  
-      ) : (  
-        <View>  
-          <Text style={styles.header}>Enter code</Text>  
-          <Text style={styles.subtext}>We've sent an SMS with an activation code to your phone {callingCode} {phoneNumber}</Text>  
-          <View style={styles.otpContainer}>  
-            {otp.map((digit, index) => (  
-              <TextInput  
-                key={index} 
-                ref={(ref) => (otpRefs.current[index] = ref)} 
-                style={styles.otpInput}  
-                value={digit}  
-                keyboardType="number-pad"  
-                maxLength={1}  
-                onChangeText={(value) => handleOtpChange(index, value)}  
-                onFocus={() => setWrongOtp(false)} // Reset wrong OTP state on focus  
-              />  
-            ))}           </View>  
-            {wrongOtp && <Text style={styles.errorText}>Wrong code, please try again</Text>}  
-            <Text>  
-              {resendTimer > 0 ? (  
-                `Send code again in ${resendTimer} seconds`  
-              ) : (  
-                <TouchableOpacity onPress={handleResendCode}>  
-                  <Text style={styles.resendText}>Resend Code</Text>  
-                </TouchableOpacity>  
-              )}  
-            </Text>  
-            <TouchableOpacity style={styles.button} onPress={handleOTPSubmit}>  
-              <Text style={styles.buttonText}>Verify</Text>  
-            </TouchableOpacity>  
-          </View>  
-        )}  
-      </ScrollView>  
-    );  
-  };  
-  
-  const styles = StyleSheet.create({  
-    container: {  
-      flexGrow: 1,  
-      padding: 20,  
-      backgroundColor: "#fff",  
-    },  
-    header: {  
-      fontSize: 28,  
-      fontWeight: "bold",  
-      marginBottom: 10,  
-    },  
-    subtext: {  
-      fontSize: 14,  
-      color: "#555",  
-      marginBottom: 20,  
-    },  
-    phoneContainer: {  
-      flexDirection: "row",  
-      alignItems: "center",  
-      marginBottom: 20,  
-    },  
-    countryCode: {  
-      width: 60,  
-      height: 50,  
-      borderWidth: 1,  
-      borderColor: "#ccc",  
-      borderRadius: 8,  
-      textAlign: "center",  
-      marginRight: 10,  
-    },  
-    phoneInput: {  
-      flex: 1,  
-      height: 50,  
-      borderWidth: 1,  
-      borderColor: "#ccc",  
-      borderRadius: 8,  
-      paddingLeft: 10,  
-    },  
-    otpContainer: {  
-      flexDirection: "row",  
-      justifyContent: "space-between",  
-      marginBottom: 20,  
-    },  
-    otpInput: {  
-      width: 40,  
-      height: 50,  
-      borderWidth: 1,  
-      borderColor: "#ccc",  
-      borderRadius: 8,  
-      textAlign: "center",  
-      fontSize: 20,  
-      marginHorizontal: 5,  
-    },  
-    button: {  
-      backgroundColor: "#4F8EF7",  
-      borderRadius: 8,  
-      paddingVertical: 12,  
-      alignItems: "center",  
-      marginTop: 10,  
-    },  
-    buttonText: {  
-      color: "#fff",  
-      fontWeight: "bold",  
-      fontSize: 16,  
-    },  
-    errorText: {  
-      color: "red",  
-      textAlign: "center",  
-      marginBottom: 10,  
-    },  
-    resendText: {  
-      color: "#4F8EF7",  
-      textAlign: "center",  
-    },  
-  });  
-  
-  export default LoginWithPhone;
+          <TouchableOpacity style={styles.button} onPress={() => handleSendOTP(phoneNumber)} disabled={!phoneNumber}>
+           {isLoading ? (
+                     <ActivityIndicator size="small" color="#FFFFFF" />
+                   ) : ( <Text style={styles.buttonText}>Continue</Text>
+                   )
+                  }
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View>
+          <Text style={styles.header}>Enter code</Text>
+          <Text style={styles.subtext}>We've sent an SMS with an activation code to your phone {callingCode} {phoneNumber}</Text>
+          <View style={styles.otpContainer}>
+            {otp.map((digit, index) => (
+              <TextInput
+                key={index}
+                ref={(ref) => (otpRefs.current[index] = ref)}
+                style={styles.otpInput}
+                value={digit}
+                keyboardType="number-pad"
+                maxLength={1}
+                onChangeText={(value) => handleOtpChange(index, value)}
+                onFocus={() => setWrongOtp(false)}
+              />
+            ))}
+          </View>
+          {wrongOtp && <Text style={styles.errorText}>Wrong code, please try again</Text>}
+          <TouchableOpacity style={styles.button} onPress={handleOTPSubmit}>
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (<Text style={styles.buttonText}>Verify</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flexGrow: 1, padding: 20, backgroundColor: "#fff" },
+  header: { fontSize: 28, fontWeight: "bold", marginBottom: 10 },
+  subtext: { fontSize: 14, color: "#555", marginBottom: 20 },
+  phoneContainer: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
+  countryCode: { width: 60, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, textAlign: "center", marginRight: 10 },
+  phoneInput: { flex: 1, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingLeft: 10 },
+  button: { backgroundColor: "#4F8EF7", borderRadius: 8, paddingVertical: 12, alignItems: "center", marginTop: 10 },
+  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  dropdown: { marginBottom: 20, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, overflow: "hidden" },
+  otpContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
+  otpInput: { width: 40, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, textAlign: "center", fontSize: 20 },
+  errorText: { color: "red", textAlign: "center", marginBottom: 10 },
+  flagAndText: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
+  flagText: { marginLeft: 10, fontSize: 16 },
+});
+
+export default LoginWithPhone;

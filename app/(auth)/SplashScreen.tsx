@@ -7,17 +7,17 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { useRouter } from 'expo-router'; // Correct usage of router for navigation
+import { useRouter } from 'expo-router'; 
 
 const SplashScreen = () => {
-  const router = useRouter(); // Use the router from expo-router
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
       {/* Icon */}
       <View style={styles.iconContainer}>
         <Image
-          source={require('../assets/images/Illustration.png')} 
+          source={require('../../assets/images/Illustration.png')} 
           style={styles.image} 
         />
       </View>
@@ -34,13 +34,13 @@ const SplashScreen = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.buttonPrimary}
-          onPress={() => router.push('/(auth)/SignInOption')} // Correct navigation
+          onPress={() => router.push('/(auth)/SignInOption')} 
         >
           <Text style={styles.buttonTextPrimary}>Sign In</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttonSecondary}
-          onPress={() => router.push('/(auth)/SignUp')} // Correct navigation
+          onPress={() => router.push('/(auth)/SignUp')} 
         >
           <Text style={styles.buttonTextSecondary}>Create account</Text>
         </TouchableOpacity>
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   image: {
     width: 315.61,
     height: 100,
-    resizeMode: 'contain', // Ensure the image scales correctly
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 24,

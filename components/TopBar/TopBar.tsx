@@ -1,10 +1,32 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { Alert, StyleSheet, Text, View } from "react-native";
+import React, { useContext, useEffect } from "react";
 import { Image } from "expo-image";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import Searchbar from "./Searchbar";
+import Searchbar from "./Searchbar"; 
+import { AuthContext } from "@/app/AuthContext/AuthContext";
+import axios from "axios";
 
 const TopBar = () => {
+  const {authUser , setauthUser} =useContext(AuthContext);
+  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;  
+  const fetchUserData = async () => {
+    
+    try {
+        const response = await axios.post(`${apiUrl}/api/user/profile`, {
+            userID: authUser.userId,  // Sending userID in the request body
+          }); // Replace with your API endpoint
+          
+          console.log(response.data.user);
+          
+      setauthUser(response.data.user);
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch user data");
+      console.error(error);
+    }
+  };
+   useEffect(() => {
+      fetchUserData();
+    }, []);
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -12,7 +34,10 @@ const TopBar = () => {
         <Image
           style={styles.profileImg}
           source={
-            "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            {
+             uri: authUser.avatar ? authUser.avatar : "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              
+            }
           }
         />
         <FontAwesome6 name="bell" size={24} color="black" />
@@ -21,7 +46,7 @@ const TopBar = () => {
       {/* Name and Greetings */}
       <View style={styles.nameContainer}>
         <Text style={styles.greeting}>Hello</Text>
-        <Text style={styles.name}>Jeff !</Text>
+        <Text style={styles.name}>{authUser.fullName} !</Text>
       </View>
 
       <View style={styles.imageContainer}>

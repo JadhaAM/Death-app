@@ -16,7 +16,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        // tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -30,7 +30,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="homeStack"
+        name="home"
         options={{
           title: "Home",
           tabBarShowLabel: false,
@@ -47,6 +47,17 @@ export default function TabLayout() {
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
             <Octicons name="heart" size={24} color={color} />
+          ),
+          tabBarActiveTintColor: "#CC2B52",
+        }}
+      />
+      <Tabs.Screen
+        name="Profile"
+        options={{
+          title: "Profile",
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color }) => (
+            <Octicons name="person" size={24} color={color} />
           ),
           tabBarActiveTintColor: "#CC2B52",
         }}

@@ -1,29 +1,32 @@
 import { Image } from "react-native";
 import { Stack } from "expo-router";
-import React from "react";
-import { AuthProvider } from "../AuthContext/AuthContext";
+import React, { useContext } from "react";
 
-
-export default function HomeStackLayout() {
+export default function AuthStackLayout() {
   return (
-    <AuthProvider>
-    <Stack screenOptions={
+
+    <Stack  initialRouteName="SplashScreen"
+    screenOptions={
       { headerShown: true ,
+        headerStyle: { backgroundColor: 'white' },
         headerTitle: '',
          headerRight: () => (
      <Image
                source={require('../../assets/images/Star 8.png')}
                style={{ width: 46,height: 44,marginRight: 10 }}
              />
-    ), }}>
+    ), }
+      
+    }>
       <Stack.Screen name="SignIn"  />
       <Stack.Screen name="SignInOption"  options={{ headerShown: false }} />
+      <Stack.Screen name="SplashScreen"  options={{ headerShown: false }} />
       <Stack.Screen name="LoginWithPhone" />
-      <Stack.Screen name="PasswordRecovery" />
-      <Stack.Screen name="PasswordResetScreen" />
+      <Stack.Screen name="Email" />
+      <Stack.Screen name="VerifyOTP" />
+      <Stack.Screen name="PasswordReset" />
       <Stack.Screen name="SignUp" />
-      {/* <Stack.Screen name="Listings" /> */}
+      
     </Stack>
-    </AuthProvider>
   );
 }
