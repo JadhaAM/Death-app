@@ -8,7 +8,7 @@ import React from "react";
 const home =()=>{
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={true}>
         <View>
           {/* Top Section */}
           <TopBar />

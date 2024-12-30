@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "946809947379",
+    "project_id": "the-legacy-app-4f373",
+    "storage_bucket": "the-legacy-app-4f373.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946809947379:android:5cf2d4247eab3798402386",
+        "android_client_info": {
+          "package_name": "com.apollonox.thelegacyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVB4t_aKISZAS8rTUuxqdY5Gqh6hUgJ0c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -17,7 +17,7 @@ const SplashScreen = () => {
       {/* Icon */}
       <View style={styles.iconContainer}>
         <Image
-          source={require('../../assets/images/Illustration.png')} 
+          source={require('../assets/images/file.png')} 
           style={styles.image} 
         />
       </View>

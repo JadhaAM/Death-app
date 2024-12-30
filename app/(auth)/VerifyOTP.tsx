@@ -3,32 +3,43 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityInd
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import  { AuthContext } from "../AuthContext/AuthContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VerifyOTP = () => {
   const router = useRouter();
-  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
-  const { authUser } = useContext(AuthContext);
+  const { authUser ,userId, baseURL ,isVerified ,setVerified} = useContext(AuthContext);
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(20); 
   const inputRefs = useRef<(TextInput | null)[]>([]);
   const confirmationCode = code.join('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
  
   
+ 
+  
+
   
   const handleVerifyCode = async () => {
+   
     setIsLoading(true)
     try {
-        
-        const response = await axios.post(`${apiUrl}/api/user/confirm`, {
+      // const userId = await AsyncStorage.getItem('authToken');
+      console.log(authUser);
+        const response = await axios.post(`${baseURL}/api/user/confirm`, {
           confirmationCode:confirmationCode,
-            userID:authUser.userId,
+            userID:authUser,
         });
           console.log(response.data.message);
           
         if (response.status === 200) {
             Alert.alert("Success", response.data.message);
-            router.push("/(auth)/PasswordReset");
+            if (isVerified) {
+              router.push("/(auth)/PasswordReset");
+            }else{
+              setVerified(true);
+              router.push("/(auth)/SignIn");
+            } 
         } else {
             Alert.alert("Error", "Verification failed. Please try again.");
         }

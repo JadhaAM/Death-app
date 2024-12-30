@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AuthProvider, { AuthContext } from "./AuthContext/AuthContext";
+import { WebSocketProvider } from './AuthContext/WebSocketService';
 import { ThemeProvider, DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -14,8 +15,11 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   return (
     <AuthProvider>
+      <WebSocketProvider>
       <AppContent />
+      </WebSocketProvider>
     </AuthProvider>
+
   );
 }
 
@@ -63,10 +67,13 @@ function AppContent() {
 
   return (
     <ThemeProvider value={colorScheme === "light" ? DarkTheme : DefaultTheme}>
-      <Stack initialRouteName={token === null ? "(auth)" : "(tabs)"}>
+      <Stack initialRouteName={token === null ? "index" : "(tabs)"}>
+        <Stack.Screen name="index"  options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="Listings" options={{ headerShown: false }} />
+        <Stack.Screen name="ChatScreen" options={{ headerShown: false }} />
+        <Stack.Screen name="NotificationScreen" options={{ headerShown: false }} />
         <Stack.Screen name="MoreInfo" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>

@@ -17,7 +17,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.apollonox.thelegacyapp"
+      "package": "com.apollonox.thelegacyapp",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -44,9 +45,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "913297ae-d74b-4884-a4e5-d0b390c83a39"
+        "projectId": "254078bc-5e97-4f41-bbb3-cd4c6aaae267"
       }
     },
-    "owner": "apollonox"
+    "owner": "kyotocreative"
   }
 }

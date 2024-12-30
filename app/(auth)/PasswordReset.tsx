@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, GestureResponderEvent, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image,GestureResponderEvent, ActivityIndicator } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -7,9 +7,9 @@ import { router } from 'expo-router';
 import { AuthContext } from '../AuthContext/AuthContext';
 
 const PasswordResetScreen = () => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-   const { authUser } = useContext(AuthContext);
+   const { authUser , baseURL} = useContext(AuthContext);
   const validationSchema = Yup.object().shape({
     password: Yup.string()
       .min(8, 'Password must be at least 8 characters long')
@@ -18,31 +18,38 @@ const PasswordResetScreen = () => {
       .oneOf([Yup.ref('password')], 'Passwords must match')
       .required('Confirm your password'),
   });
-
-  const handleResetPassword = async (values: { password: string ,confirmPassword:string }) => {
+  
+  const handleSubmit = async (values: { password: string ,confirmPassword:string }) => {
+    console.log(authUser);
     try {
       setIsLoading(true);
-      await axios.post(`${apiUrl}/api/user/reset-password`, {
+       await axios.post(`${baseURL}/api/user/reset-password`, {
         password: values.password,
         confirmPassword: values.confirmPassword,
-        userID:authUser.userId
+        userID:authUser,
       });
-      Alert.alert("Success", "otp sent by email");
+      Alert.alert('Success', 'Your password has been changed successfully!');
       router.push("/(auth)/SignIn");
     } catch (error) {
       Alert.alert("Error", "Failed to sign out");
     } finally {
       setIsLoading(false);
     }
-    Alert.alert('Success', 'Your password has been changed successfully!');
+   
   };
 
   return (
     <View style={styles.container}>
+      <View style={styles.logoContainer}>
+              <Image
+                source={require('../../assets/images/Star 8.png')}
+                style={styles.logo}
+              />
+            </View>
       <Formik
         initialValues={{ password: '', confirmPassword: '' }}
         validationSchema={validationSchema}
-        onSubmit={handleResetPassword}
+        onSubmit={handleSubmit}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <>
@@ -95,6 +102,14 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     backgroundColor: '#fff',
+  },
+  logoContainer: {
+    marginBottom: 20,
+  },
+  logo: {
+    width: 220,
+    height: 250,
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 28,

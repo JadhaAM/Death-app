@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View,
   Text,
@@ -7,17 +7,32 @@ import {
   TouchableOpacity,
   Alert,
   GestureResponderEvent,
+  ActivityIndicator,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { AuthContext } from '../AuthContext/AuthContext';
+import axios from 'axios';
 
-const LoginScreen = () => {
-  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
+const SignInOption = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { baseURL } = useContext(AuthContext);
+  const handleGoogleLogin = async () => {
+    window.location.href = `${baseURL}/api/user/google`;
+    // setIsLoading(true);
+    // try {
+    //   await axios.get(`${baseURL}/api/user/google`);
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${apiUrl}/api/user/google`;
-};
+    // } catch (error) {
+    //   Alert.alert("Error", "not login with googale");
+    //   console.error(error);
+    // } finally {
+    //   setIsLoading(false);
+    // }
+
+  };
+
 
   return (
     <View style={styles.container}>
@@ -42,19 +57,22 @@ const LoginScreen = () => {
         {/* Google */}
         <TouchableOpacity style={styles.socialButton} onPress={handleGoogleLogin as unknown as (event: GestureResponderEvent) => void} >
           <FontAwesome name="google" size={20} color="#DB4437" />
-          <Text style={styles.socialButtonText} >Continue with Google</Text>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (<Text style={styles.socialButtonText} >Continue with Google</Text>
+          )}
         </TouchableOpacity>
 
         {/* Apple */}
-        <TouchableOpacity style={styles.socialButton} >
+        <TouchableOpacity style={styles.socialButton} onPress={() => router.push('/(auth)/SignUp')}>
           <FontAwesome name="apple" size={20} color="#000000" />
-          <Text style={styles.socialButtonText}>Continue with Apple</Text>
+          <Text style={styles.socialButtonText}>Continue with Email</Text>
         </TouchableOpacity>
 
         {/* Phone */}
         <TouchableOpacity style={styles.socialButton} >
           <FontAwesome name="phone" size={20} color="#000000" />
-          <Text style={styles.socialButtonText} onPress={()=>router.push("/(auth)/loginWithPhone")}>Continue with Phone</Text>
+          <Text style={styles.socialButtonText} onPress={() => router.push("/(auth)/LoginWithPhone")}>Continue with Phone</Text>
         </TouchableOpacity>
       </View>
 
@@ -129,4 +147,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default SignInOption;

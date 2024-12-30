@@ -1,0 +1,180 @@
+// ChatScreen.js  
+import React, { useEffect, useState } from 'react';
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+} from 'react-native';
+import io from 'socket.io-client';
+import axios from 'axios';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
+import Header from '@/components/Header';
+
+// Configure your Server URLs  
+const SOCKET_URL = 'http://your-server-url'; // Replace with your server URL  
+const API_URL = 'http://your-api-url'; // Replace with your API URL  
+
+const ChatScreen = () => {
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState('');
+    const [audioPlayer] = useState(new AudioRecorderPlayer());
+    const [recording, setRecording] = useState(false);
+    const socket = io(SOCKET_URL);
+
+    useEffect(() => {
+        // Fetch initial messages from the API  
+        const fetchMessages = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/messages`);
+                setMessages(response.data);
+            } catch (error) {
+                console.error("Error fetching messages: ", error);
+            }
+        };
+
+        fetchMessages();
+
+        // Listen for new messages from Socket.IO  
+        socket.on('newMessage', (message) => {
+            setMessages((prevMessages) => [...prevMessages, message]);
+        });
+
+        return () => {
+            socket.off('newMessage');
+        };
+    }, []);
+
+    const sendMessage = async () => {
+        if (!input.trim()) return;
+        const message = {
+            text: input,
+            sender: 'You',
+            timestamp: new Date(),
+            type: 'text'
+        };
+        setMessages((prevMessages) => [...prevMessages, message]);
+        socket.emit('sendMessage', message);
+        setInput('');
+    };
+
+    const startRecording = async () => {
+        const path = 'path_to_your_audio_file.mp3'; // Replace with your desired path  
+        setRecording(true);
+        await audioPlayer.startRecorder(path);
+    };
+
+    const stopRecording = async () => {
+        const result = await audioPlayer.stopRecorder();
+        setRecording(false);
+        const message = {
+            audio: result,
+            sender: 'You',
+            timestamp: new Date(),
+            type: 'audio'
+        };
+        setMessages((prevMessages) => [...prevMessages, message]);
+        socket.emit('sendAudio', message);
+    };
+
+    const playAudio = async (path) => {
+        await audioPlayer.startPlayer(path);
+    };
+
+    const renderMessageItem = ({ item }) => (
+        <View style={styles.messageContainer}>
+            <Text style={styles.sender}>{item.sender}</Text>
+            {item.type === 'text' ? (
+                <Text style={styles.message}>{item.text}</Text>
+            ) : (
+                <TouchableOpacity onPress={() => playAudio(item.audio)}>
+                    <Text style={styles.audioMessage}>🔊 Play Audio</Text>
+                </TouchableOpacity>
+            )}
+            <Text style={styles.time}>{new Date(item.timestamp).toLocaleTimeString()}</Text>
+        </View>
+    );
+
+    return (
+        <View style={styles.container}>
+            <view>
+                <Header title="anthany das" />
+
+            </view>
+            <FlatList
+                data={messages}
+                renderItem={renderMessageItem}
+                keyExtractor={(item, index) => index.toString()}
+                inverted // Reverse the list to show the latest messages at the bottom  
+            />
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Type a message..."
+                    value={input}
+                    onChangeText={setInput}
+                />
+                <Button title="Send" onPress={sendMessage} />
+                {recording ? (
+                    <Button title="Stop Recording" onPress={stopRecording} />
+                ) : (
+                    <Button title="Record Audio" onPress={startRecording} />
+                )}
+            </View>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: '#fff',
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        width: 375,
+        height:83.46,
+        gap: 5,
+        borderWidth: 1,
+    
+    },
+    input: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginRight: 10,
+    },
+    messageContainer: {
+        marginVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        paddingBottom: 8,
+    },
+    sender: {
+        fontWeight: 'bold',
+    },
+    message: {
+        marginLeft: 10,
+    },
+    audioMessage: {
+        color: 'blue',
+        marginVertical: 5,
+    },
+    time: {
+        fontSize: 12,
+        color: '#999',
+        marginTop: 2,
+    },
+});
+
+export default ChatScreen;
+
+

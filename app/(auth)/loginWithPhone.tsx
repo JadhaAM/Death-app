@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from "react-native";
 import { Picker } from '@react-native-picker/picker';
 import CountryFlag from 'react-native-country-flag';
 import axios from "axios";
+import { AuthContext } from "../AuthContext/AuthContext";
+import { router } from "expo-router";
+
 
 const LoginWithPhone = () => {
   const [step, setStep] = useState(1);
@@ -13,10 +16,8 @@ const LoginWithPhone = () => {
   const [resendTimer, setResendTimer] = useState(20);
   const [selectedCountry, setSelectedCountry] = useState("FR");
   const [callingCode, setCallingCode] = useState("+33");
-  const [userId, setUserId] = useState("");
-  const [secret, setSecret] = useState("");
-  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { baseURL ,setPhoneVerified}=useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
 
   const countryList = [
     { code: "FR", name: "France", callingCode: "+33" },
@@ -46,20 +47,24 @@ const LoginWithPhone = () => {
     }
     return () => clearInterval(timer);
   }, [step, resendTimer]);
-
-  const handleSendOTP = async (phoneNumber: string): Promise<void> => {
-    const formattedPhoneNumber = `${callingCode}${phoneNumber.replace(/\s+/g, "")}`;
+  
+  const handleSendOTP = async (phoneNumber: string)=> {
+     const formattedPhoneNumber = `${callingCode}${phoneNumber.replace(/\s+/g, "")}`;
+     
+  
     setIsLoading(true);
     try {
-      const response = await axios.post(`${apiUrl}/send-otp`, { phoneNumber: formattedPhoneNumber });
-      setUserId(response.data.userId);
-      setSecret(response.data.secret);
+      const response = await axios.post(`${baseURL}/api/user/send-code`,{
+        phoneNumber:formattedPhoneNumber,
+      })
       setOtp(Array(6).fill(""));
       setStep(2);
       setResendTimer(20);
       alert("OTP sent! Please check your messages.");
     } catch (error) {
       alert("Error sending OTP. Please try again.");
+      console.log(error);
+      
     } finally {
       setIsLoading(false);  
     }
@@ -75,17 +80,23 @@ const LoginWithPhone = () => {
         otpRefs.current[index + 1]?.focus();
       }
     }
-  };
+  };   
 
-  const handleOTPSubmit = async (): Promise<void> => {
+
+  
+
+  const handleOTPSubmit = async ( )=> {
+    const formattedPhoneNumber = `${callingCode}${phoneNumber.replace(/\s+/g, "")}`;
     const otpString = otp.join("");
+    setPhoneVerified(true);
+    router.push("/(auth)/SignUp");
     setIsLoading(true);
     try {
-      const response = await axios.post(`${apiUrl}/verify-otp`, {
-        userId,
-        secret,
-        otp: otpString,
-      }); 
+      const response = await  axios.post(`${baseURL}/api/user/send-code`,{
+        phoneNumber:formattedPhoneNumber,
+        opt:otpString,
+      }) 
+      setPhoneVerified(true);
       Alert.alert("OTP verified successfully!");
       
     } catch (error) {
@@ -105,6 +116,7 @@ const LoginWithPhone = () => {
             <Picker
               selectedValue={selectedCountry}
               onValueChange={(itemValue) => handleCountryChange(itemValue)}
+              style={styles.dropdown}
             >
               {countryList.map((country) => (
                 <Picker.Item key={country.code} label={`${country.name} (${country.callingCode})`} value={country.code} />
@@ -186,7 +198,7 @@ const styles = StyleSheet.create({
   otpContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
   otpInput: { width: 40, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, textAlign: "center", fontSize: 20 },
   errorText: { color: "red", textAlign: "center", marginBottom: 10 },
-  flagAndText: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
+  flagAndText: { flexDirection: "row", alignItems: "center", marginBottom: 10  },
   flagText: { marginLeft: 10, fontSize: 16 },
 });
 

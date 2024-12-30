@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
+import { AuthContext } from '../AuthContext/AuthContext';
 
 const Email = () => {
   const router = useRouter();
-  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
   const [email, setEmail] = useState('');
+  const { baseURL}=useContext(AuthContext);
  const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
   const handleEmailCheckAndSendCode = async () => {
     setIsLoading(true);
     try {
-      await axios.post(`${apiUrl}/api/user/send-emailcode`, {
+      await axios.post(`${baseURL}/api/user/send-emailcode`, {
         email: email,
       });
       Alert.alert("Success", "otp sent by email");

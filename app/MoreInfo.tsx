@@ -7,7 +7,7 @@ import {
   Linking,
   Alert,
 } from "react-native";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import Header from "@/components/Header";
 import { Image } from "expo-image";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -18,7 +18,9 @@ import clients from "../assets/icons/clients.png";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import axios from "axios";
+import { AuthContext } from "./AuthContext/AuthContext";
 
 const StatsList = [
   {
@@ -37,11 +39,12 @@ const StatsList = [
     img: reviews,
   },
 ];
-
+  
 const MoreInfo = () => {
   const { title, name, image, rating, location, desc } = useLocalSearchParams();
+  const { authUser, setauthUser,setUserId ,userId, setToken , baseURL, setReceiverId} = useContext(AuthContext);
 
-  const StatsItem = ({ title, value, img }) => (
+  const StatsItem = ({ title , value, img }) => (
     <View style={styles.statsItem}>
       <View style={styles.statsImgCont}>
         <Image source={img} style={styles.statsImg} contentFit="contain" />
@@ -52,7 +55,7 @@ const MoreInfo = () => {
   );
 
   const handleCallPress = () => {
-    const phoneNumber=9678542175
+    const phoneNumber=+16469802390
       const phoneURL = `tel:${phoneNumber}`;
   
       Linking.canOpenURL(phoneURL)
@@ -65,6 +68,53 @@ const MoreInfo = () => {
         })
         .catch((err) => console.error("Error opening phone app:", err));
     };
+
+  const MessagePress = async() => {
+    try {
+      const fullName=name;
+      const response=  await axios.get(`${baseURL}/api/user/userId`, {
+        params: { identifier: fullName }, // Send username or email as identifier
+    });
+         const  receiverId=response.data.userId
+           console.log(receiverId);
+           setReceiverId(receiverId);
+       router.push({
+        pathname: "/ChatScreen",
+        params: {
+          name: name,
+          receiver:receiverId,
+        },
+      });
+    } catch (error) {
+      console.log("user id error :",error);
+      
+    }
+  
+      
+    
+    // console.log("function call");
+    
+    // try {
+
+    //   const response = await axios.post(`${baseURL}/api/chats/messages`,{
+    //     sender:authUser,
+    //   });   
+    //   console.log("on going");
+      
+    //   router.push({
+    //     pathname: "/ChatScreen",
+    //     params: {
+    //       name: name,
+    //       image: image,
+          
+    //     },
+    //   });
+      
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    };
+    
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,7 +190,7 @@ const MoreInfo = () => {
               size={24}
               color="#fff"
             />
-            <Text style={styles.ctnBtnText}>Message</Text>
+            <Text style={styles.ctnBtnText}  onPress={MessagePress}>Message</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -148,7 +198,7 @@ const MoreInfo = () => {
   );
 };
 
-export default MoreInfo;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -272,3 +322,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+export default MoreInfo;

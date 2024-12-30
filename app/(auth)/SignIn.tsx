@@ -20,13 +20,14 @@ import { AuthContext } from '../AuthContext/AuthContext';
 
 
 const SignIn = () => {
-    const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
+
     const router = useRouter();
-    const { token, setToken } = useContext(AuthContext);
+    const { token, setToken, baseURL ,isVerified } = useContext(AuthContext);
     const [isChecked, setIsChecked] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const toggleSwitch = () => setIsChecked(previousState => !previousState);
+    console.log(baseURL);
 
     const validationSchema = Yup.object().shape({
         email: Yup.string().email('Invalid email').required('Email is required'),
@@ -41,10 +42,12 @@ const SignIn = () => {
             Alert.alert("Error", "You must accept Terms and Conditions.");
             return;
         }
+       
         setIsLoading(true);
+        
         try {
 
-            const response = await axios.post(`${apiUrl}/api/user/login`, {
+            const response = await axios.post(`${baseURL}/api/user/login`, {
                 email: values.email,
                 password: values.password,
             });
@@ -53,7 +56,12 @@ const SignIn = () => {
                 Alert.alert("Success", "Logged in successfully!");
                 AsyncStorage.setItem('authToken', response.data.token);
                 setToken(response.data.token);
-                router.push("/(tabs)/home");
+                if (isVerified) {
+                    router.push("/(tabs)/home");
+                  }else{
+                    
+                    router.push("/(auth)/VerifyOTP");
+                  } 
             } else if (response.status === 400) {
                 Alert.alert("Error", response.data.message || "An error occurred.");
             } else {
@@ -67,9 +75,20 @@ const SignIn = () => {
         }
     };
 
-    const handleGoogleLogin = () => {
-        window.location.href = `${apiUrl}/api/user/google`;
-    };
+    const handleGoogleLogin = async () => {
+        window.location.href = `${baseURL}/api/user/google`;
+        // setIsLoading(true);
+        // try {
+        //   await axios.get(`${baseURL}/api/user/google`);
+    
+        // } catch (error) {
+        //   Alert.alert("Error", "not login with googale");
+        //   console.error(error);
+        // } finally {
+        //   setIsLoading(false);
+        // }
+    
+      };
 
 
 
@@ -173,12 +192,15 @@ const SignIn = () => {
                     onPress={handleGoogleLogin as unknown as (event: GestureResponderEvent) => void}
                 >
                     <FontAwesome name="google" size={20} color="#DB4437" />
-                    <Text style={styles.socialButtonText}>Google</Text>
+                    {isLoading ? (
+                        <ActivityIndicator size="small" color="#ffffff" />
+                    ) : (<Text style={styles.socialButtonText}>Google</Text>
+                    )}
                 </TouchableOpacity>
             </View>
 
             {/* Login with Phone */}
-            <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/loginWithPhone')}>
+            <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/LoginWithPhone')}>
                 <Text style={styles.phoneButtonText}>Login with Phone</Text>
             </TouchableOpacity>
 

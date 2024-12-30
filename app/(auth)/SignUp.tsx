@@ -9,8 +9,8 @@ import { AuthContext } from "../AuthContext/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignUp = () => {
-    const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
-    const { setUserId } = useContext(AuthContext);
+
+    const { setAuthUser, baseURL,isVerified, setVerified ,isPhoneVerified ,setPhoneVerified} = useContext(AuthContext);
     const router = useRouter();
     const [isNewsletterEnabled, setNewsletterEnabled] = useState(false);
     const [isTermsChecked, setTermsChecked] = useState(false);
@@ -23,6 +23,7 @@ const SignUp = () => {
 
     const validationSchema = Yup.object().shape({
         name: Yup.string().required("Name is required"),
+        phoneNumber: Yup.string().required("phoneNumber is required"),
         email: Yup.string().email("Invalid email").required("Email is required"),
         password: Yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
         confirmPassword: Yup.string()
@@ -35,28 +36,43 @@ const SignUp = () => {
         email: string;
         password: string;
         confirmPassword: string;
+        phoneNumber:String;
     }
     const handleSubmit = async (values: SignUpFormValues) => {
         if (!isTermsChecked) {
             Alert.alert("Error", "You must accept Terms and Conditions.");
             return;
         }
-        setIsLoading(true);
+        
+        setIsLoading(true);  
         try {
-            const response = await axios.post(`${apiUrl}/api/user/register`, {
+            const response = await axios.post(`${baseURL}/api/user/register`, {
                 email: values.email,
                 password: values.password,
                 password2: values.confirmPassword,
                 fullName: values.name,
+                phoneNumber:values.phoneNumber
             });
             if (response.status === 201) {
                 Alert.alert("Success", "sign in successfully!");
                 const { userId } = response.data;
                 console.log(userId);
 
-                setUserId(userId);
-                await AsyncStorage.setItem("userId", userId);
-                router.push("/(auth)/SignIn");
+                setAuthUser(userId);
+                await AsyncStorage.setItem('UserId', userId);
+                if (isPhoneVerified) {
+                    setPhoneVerified(false)
+                    router.push("/(tabs)/home");
+                }else{
+                setVerified(false);
+                 if(isVerified ){
+                    router.push("/(auth)/SignIn");
+                 }else{
+
+                     router.push("/(auth)/VerifyOTP") ;
+                 } 
+                
+            }
             } else if (response.status === 400) {
                 Alert.alert("user alerady exists");
             } else {
@@ -65,6 +81,8 @@ const SignUp = () => {
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || error.message || "An error occurred during sign up.";
             Alert.alert("Error", errorMessage);
+            console.log(error);
+            
         } finally {
             setIsLoading(false);
         }
@@ -75,7 +93,7 @@ const SignUp = () => {
             <Text style={styles.header}>Sign Up</Text>
 
             <Formik
-                initialValues={{ name: "", email: "", password: "", confirmPassword: "" }}
+                initialValues={{ name: "", email: "", password: "", confirmPassword: "",phoneNumber:""}}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
@@ -99,6 +117,16 @@ const SignUp = () => {
                             keyboardType="email-address"
                             value={values.email}
                             onChangeText={handleChange("email")}
+                        />
+                        {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
+                        {/* phone Field */}
+                        <Text style={styles.label}>Phone</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Number"
+                            keyboardType="phone-pad"
+                            value={values.phoneNumber}
+                            onChangeText={handleChange("phoneNumber")}
                         />
                         {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
 

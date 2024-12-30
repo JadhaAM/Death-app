@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 export default function AuthStackLayout() {
   return (
 
-    <Stack  initialRouteName="SplashScreen"
+    <Stack 
     screenOptions={
       { headerShown: true ,
         headerStyle: { backgroundColor: 'white' },
@@ -20,8 +20,9 @@ export default function AuthStackLayout() {
     }>
       <Stack.Screen name="SignIn"  />
       <Stack.Screen name="SignInOption"  options={{ headerShown: false }} />
-      <Stack.Screen name="SplashScreen"  options={{ headerShown: false }} />
       <Stack.Screen name="LoginWithPhone" />
+      <Stack.Screen name="ChooseLanguage" />
+      <Stack.Screen name="ChoosePlan" />
       <Stack.Screen name="Email" />
       <Stack.Screen name="VerifyOTP" />
       <Stack.Screen name="PasswordReset" />

@@ -8,18 +8,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
   const router = useRouter();
-  const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
-  const { authUser, setauthUser, setToken } = useContext(AuthContext);
+  const { authUser, setauthUser,setUserId ,userId, setToken , baseURL} = useContext(AuthContext);
 
   const fetchUserData = async () => {
 
     try {
-      const response = await axios.post(`${apiUrl}/api/user/profile`, {
-        userID: authUser.userId,
+      const response = await axios.post(`${baseURL}/api/user/profile`, {
+        userID: authUser,
       });
 
 
-      setauthUser(response.data.user);
+      setUserId(response.data.user);
     } catch (error) {
       Alert.alert("Error", "Failed to fetch user data");
     }
@@ -35,7 +34,7 @@ const Profile = () => {
 
   const handleSignOut = async () => {
     try {
-      await axios.get(`${apiUrl}/api/user/logout`);
+      await axios.get(`${baseURL}/api/user/logout`);
       Alert.alert("Success", "You have been signed out");
       clearAuthToken();
       router.push("/(auth)/SignIn");
@@ -54,10 +53,10 @@ const Profile = () => {
       {/* Header */}
       <View style={styles.header}>
         <Image source={{
-          uri: authUser.avatar ? authUser.avatar : "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          uri: userId.avatar ? userId.avatar : "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         }} style={styles.avatar} />
         <View>
-          <Text style={styles.userName}>Hi, {authUser.fullName}</Text>
+          <Text style={styles.userName}>Hi, {userId.fullName}</Text>
           <Text style={styles.userAge}>{ } Year old</Text>
         </View>
       </View>
