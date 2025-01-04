@@ -22,7 +22,7 @@ import { AuthContext } from '../AuthContext/AuthContext';
 const SignIn = () => {
 
     const router = useRouter();
-    const { token, setToken, baseURL ,isVerified } = useContext(AuthContext);
+    const { token, setToken, baseURL ,isVerified ,isSurvyDone,} = useContext(AuthContext);
     const [isChecked, setIsChecked] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,12 +56,12 @@ const SignIn = () => {
                 Alert.alert("Success", "Logged in successfully!");
                 AsyncStorage.setItem('authToken', response.data.token);
                 setToken(response.data.token);
-                if (isVerified) {
-                    router.push("/(tabs)/home");
-                  }else{
-                    
-                    router.push("/(auth)/VerifyOTP");
-                  } 
+                router.push("/(tabs)/home");
+                // if (isVerified) {
+                //         router.push("/(tabs)/home");
+                //   }else{
+                //     router.push("/(auth)/VerifyOTP");
+                //   } 
             } else if (response.status === 400) {
                 Alert.alert("Error", response.data.message || "An error occurred.");
             } else {
@@ -76,17 +76,17 @@ const SignIn = () => {
     };
 
     const handleGoogleLogin = async () => {
-        window.location.href = `${baseURL}/api/user/google`;
-        // setIsLoading(true);
-        // try {
-        //   await axios.get(`${baseURL}/api/user/google`);
+//         window.location.href = `${baseURL}/api/user/google`;
+        setIsLoading(true);
+        try {
+          await axios.get(`${baseURL}/api/user/google`);
     
-        // } catch (error) {
-        //   Alert.alert("Error", "not login with googale");
-        //   console.error(error);
-        // } finally {
-        //   setIsLoading(false);
-        // }
+        } catch (error) {
+          Alert.alert("Error", "not login with googale");
+          console.error(error);
+        } finally {
+          setIsLoading(false);
+        }
     
       };
 

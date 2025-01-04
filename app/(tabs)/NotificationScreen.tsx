@@ -25,10 +25,10 @@ const NotificationScreen = () => {
     return (  
         <View style={styles.container}>  
             <Text style={styles.header}></Text>  
-            <view>
+            <View>
                 <Header title="Notification" />
 
-            </view>
+            </View>
             <FlatList  
                 data={notifications}  
                 renderItem={renderItem}  

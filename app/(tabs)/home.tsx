@@ -1,11 +1,31 @@
-import { Image, StyleSheet, Platform, ScrollView, View } from "react-native";
+import { Image, StyleSheet, Platform, ScrollView, Text, View } from "react-native";
 import TopBar from "@/components/TopBar/TopBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Services from "@/components/Services/Services";
 import TopResultsList from "@/components/TopResultsList/TopResultsList";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { router } from "expo-router";
+import { AuthContext } from "../AuthContext/AuthContext";
 
-const home =()=>{
+const home =()=>{ 
+  const { isSurvyDone,setSurvyDone} = useContext(AuthContext);
+  const [isMounted, setIsMounted] = useState(false);  
+
+  useEffect(() => {  
+    // Set mounted state to true when the component is mounted  
+    setIsMounted(true);  
+  }, []);  
+
+  useEffect(() => {  
+    // Navigate only if the component is mounted  
+    if (isMounted) {  
+      if (isSurvyDone) {  
+        router.push("/(auth)/Survey"); 
+      }  
+    }  
+  }, [isMounted, isSurvyDone, router]); 
+      
+ 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={true}>
@@ -40,16 +60,40 @@ const home =()=>{
                 image:
                   "https://images.unsplash.com/photo-1642911353098-42efaae7f6d4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
               },
+              
+            ]}
+          />
+
+           <View style={styles.iconContainer}>  
+               <Text style={styles.title}>
+               Top Memorial Consulting
+               </Text>
+                  <Image
+                    source={require('../../assets/images/memorial1.png')} 
+                    style={styles.image} 
+                  />
+                </View>
+
+                <TopResultsList
+            title="Top Headstones"
+            items={[
               {
-                name: "Jake Doe",
+                name: "Headstone 1",
                 rating: 4.5,
                 reviews: 100,
-                designation: "Junior Attorney",
-                availability: "10:00 AM - 6:00 PM",
-                fees: "$100",
+                location: "1234 Cemetery Lane",
                 image:
-                  "https://images.unsplash.com/photo-1662104935762-707db0439ecd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                  "https://www.thememorialmanllc.com/cdn/shop/products/272775498_4829356283796974_7563527253474323992_n.jpg?v=1644153444",
               },
+              {
+                name: "Headstone 2",
+                rating: 4.5,
+                reviews: 100,
+                location: "1234 Cemetery Lane",
+                image:
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhpujCunIJ5KOanw8WbgVSqXdNN2wLHLXqWw&s",
+              },
+             
             ]}
           />
         </View>
@@ -62,6 +106,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  iconContainer: {
+    // flex:1,
+    margin: 10,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "500",
+  },
+  image: {
+    width: 335.61,
+    height: 335.61,
+    resizeMode: 'contain',
   },
   titleContainer: {
     flexDirection: "row",

@@ -61,12 +61,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="wishlist"
+        name="NotificationScreen"
         options={{
-          title: "Wishlist",
+          title: "Notification",
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
-            <Octicons name="heart" size={24} color={color} />
+            <Ionicons name="notifications-outline" size={24} color={color} />
           ),
           tabBarActiveTintColor: "#CC2B52",
         }}

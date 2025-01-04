@@ -62,20 +62,17 @@ const Profile = () => {
       </View>
 
       {/* Menu Items */}
-      <TouchableOpacity style={styles.menuItem} >
+      <TouchableOpacity style={styles.menuItem}  onPress={()=>router.push("/EditProfile")} >
         <FontAwesome name="edit" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Edit Profile</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem} >
+      <TouchableOpacity style={styles.menuItem} onPress={()=>router.push("/ContactLog")}>
         <Ionicons name="business-outline" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Contacted Business</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem} >
-        <MaterialIcons name="subscriptions" size={24} color="#4A4A4A" />
-        <Text style={styles.menuText}>Subscriptions</Text>
-      </TouchableOpacity>
+
 
       <TouchableOpacity style={styles.menuItem} >
         <AntDesign name="questioncircleo" size={24} color="#4A4A4A" />

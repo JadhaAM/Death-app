@@ -27,6 +27,7 @@ export default function AuthStackLayout() {
       <Stack.Screen name="VerifyOTP" />
       <Stack.Screen name="PasswordReset" />
       <Stack.Screen name="SignUp" />
+      <Stack.Screen name="Survey" options={{ headerShown: false }}/>
       
     </Stack>
   );

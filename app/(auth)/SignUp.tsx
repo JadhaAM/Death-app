@@ -10,7 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignUp = () => {
 
-    const { setAuthUser, baseURL,isVerified, setVerified ,isPhoneVerified ,setPhoneVerified} = useContext(AuthContext);
+    const { setAuthUser, baseURL,isVerified,setSurvyDone, setVerified ,isPhoneVerified ,setPhoneVerified} = useContext(AuthContext);
     const router = useRouter();
     const [isNewsletterEnabled, setNewsletterEnabled] = useState(false);
     const [isTermsChecked, setTermsChecked] = useState(false);
@@ -62,6 +62,7 @@ const SignUp = () => {
                 await AsyncStorage.setItem('UserId', userId);
                 if (isPhoneVerified) {
                     setPhoneVerified(false)
+                    setSurvyDone(false) ;
                     router.push("/(tabs)/home");
                 }else{
                 setVerified(false);

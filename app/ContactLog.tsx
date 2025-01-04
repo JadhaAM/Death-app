@@ -2,8 +2,9 @@
 import React, { useContext, useEffect, useState } from 'react';  
 import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';    
 import axios from 'axios';  
-import { AuthContext } from '../AuthContext/AuthContext';  
+import { AuthContext } from './AuthContext/AuthContext';  
 import { router } from 'expo-router';
+import Header from '@/components/Header';
 
 
 
@@ -18,7 +19,7 @@ interface Message {
 
 }  
 
-const Chat= () => {  
+const ContactLog= () => {  
     const [messages, setMessages] = useState<Message[]>([]);  // Specify Message type for state  
     const { authUser, baseURL} = useContext(AuthContext);     
     const fetchMessages = async () => {
@@ -62,7 +63,6 @@ const Chat= () => {
         <Image source={{ uri: item.avatar }} style={styles.avatar} />
         <View style={styles.messageContent}>
           <Text style={styles.sender}>{item.fullName}</Text>
-          <Text style={styles.message}>{item.lastMessage}</Text>
         </View>
         <View style={styles.timeContainer}>
           <Text style={styles.time}>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
@@ -77,8 +77,10 @@ const Chat= () => {
     );  
 
     return (  
-        <View style={styles.container}>  
-            <Text style={styles.title}>Chats</Text>  
+        <View style={styles.container}>   
+            <Header title="Contact Bussenness">
+            </Header>
+           
             <FlatList  
                 data={messages}  
                 renderItem={renderMessageItem}  
@@ -144,4 +146,4 @@ const styles = StyleSheet.create({
     },  
 });   
 
-export default Chat;
+export default ContactLog;

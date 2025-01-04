@@ -9,12 +9,14 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const apiUrl = process.env.EXPO_PUBLIC_API_kEY;
+  const apiUrl2 = process.env.EXPO_PUBLIC_API_kEY2;
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState('');
   const [authUser, setAuthUser] = useState(null);
   const [isVerified, setVerified] = useState(false);
   const [isPhoneVerified, setPhoneVerified] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [isSurvyDone, setSurvyDone] = useState(false);
   const [receiverId,setReceiverId] =useState('');
   
      
@@ -52,7 +54,7 @@ const AuthProvider = ({ children }) => {
       } else {
         try {
           const ipAddress = await Network.getIpAddressAsync();
-          setBaseURL(`http://${ipAddress}:3000`);
+          setBaseURL(`http://192.168.0.100:3000`);
         } catch (error) {
           console.error('Error fetching IP:', error);
           setBaseURL(apiUrl);
@@ -78,6 +80,8 @@ const AuthProvider = ({ children }) => {
         setAuthUser,
         isVerified,
         setVerified,
+        isSurvyDone, 
+        setSurvyDone,
         isPhoneVerified,
         setPhoneVerified,
         setReceiverId,
