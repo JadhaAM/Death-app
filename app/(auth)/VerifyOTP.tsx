@@ -26,9 +26,10 @@ const VerifyOTP = () => {
     try {
       // const userId = await AsyncStorage.getItem('authToken');
       console.log(authUser);
+      
         const response = await axios.post(`${baseURL}/api/user/confirm`, {
           confirmationCode:confirmationCode,
-            userID:authUser,
+            userID:authUser.userId,
         });
           console.log(response.data.message);
           

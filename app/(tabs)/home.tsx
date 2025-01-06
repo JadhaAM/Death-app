@@ -1,31 +1,61 @@
-import { Image, StyleSheet, Platform, ScrollView, Text, View } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { Image, StyleSheet, ScrollView, Text, View } from "react-native";
 import TopBar from "@/components/TopBar/TopBar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Services from "@/components/Services/Services";
 import TopResultsList from "@/components/TopResultsList/TopResultsList";
-import React, { useContext, useEffect, useState } from "react";
-import { router } from "expo-router";
+import axios from "axios";
 import { AuthContext } from "../AuthContext/AuthContext";
+import { router } from "expo-router";
 
-const home =()=>{ 
-  const { isSurvyDone,setSurvyDone} = useContext(AuthContext);
-  const [isMounted, setIsMounted] = useState(false);  
+interface BusinessItem {
+  _id: string;
+  businessName: string;
+  rating: number;
+  reviews: number;
+  designation?: string; // For attorneys
+  availability?: string; // For attorneys
+  fees?: string; // For attorneys
+  location?: string; // For headstones
+  businessImage: string;
+}
 
-  useEffect(() => {  
-    // Set mounted state to true when the component is mounted  
-    setIsMounted(true);  
-  }, []);  
+const Home = () => {
+  const { isSurvyDone,baseURL } = useContext(AuthContext);
+  const [attorneys, setAttorneys] = useState<BusinessItem[]>([]);
+  const [headstones, setHeadstones] = useState<BusinessItem[]>([]);
 
-  useEffect(() => {  
-    // Navigate only if the component is mounted  
-    if (isMounted) {  
-      if (isSurvyDone) {  
-        router.push("/(auth)/Survey"); 
-      }  
-    }  
-  }, [isMounted, isSurvyDone, router]); 
-      
- 
+  useEffect(() => {
+    if (isSurvyDone) {
+      router.push("/(auth)/Survey");
+    }
+  }, [isSurvyDone]);
+
+  const fetchData = async (category: string, setData: React.Dispatch<React.SetStateAction<BusinessItem[]>>) => {
+    try {
+      const response = await axios.get(`${baseURL}/api/businesses/${category}`);
+      const data = response.data.map((item: any) => ({
+        _id: item._id,
+        businessName: item.businessName,
+        rating: item.rating,
+        reviews: item.reviews || 0,
+        designation: item.designation, // Only for attorneys
+        availability: item.availability, // Only for attorneys
+        fees: item.fees, // Only for attorneys
+        location: item.address, // Only for headstones
+        businessImage: item.businessImage,
+      }));
+      setData(data);
+    } catch (error) {
+      console.error(`Error fetching ${category} data:`, error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData("Attorneys", setAttorneys);
+    fetchData("Headstones", setHeadstones);
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={true}>
@@ -39,68 +69,28 @@ const home =()=>{
           {/* Top Attorneys */}
           <TopResultsList
             title="Top Attorneys"
-            items={[
-              {
-                name: "John Doe",
-                rating: 4.5,
-                reviews: 100,
-                designation: "Criminal Lawyer",
-                availability: "10:00 AM - 6:00 PM",
-                fees: "$100",
-                image:
-                  "https://images.unsplash.com/photo-1576078855245-301a0bf949cb?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              },
-              {
-                name: "Jane Doe",
-                rating: 4.5,
-                reviews: 100,
-                designation: "Senior Attorney",
-                availability: "10:00 AM - 6:00 PM",
-                fees: "$100",
-                image:
-                  "https://images.unsplash.com/photo-1642911353098-42efaae7f6d4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-              },
-              
-            ]}
+            items={attorneys}
           />
 
-           <View style={styles.iconContainer}>  
-               <Text style={styles.title}>
-               Top Memorial Consulting
-               </Text>
-                  <Image
-                    source={require('../../assets/images/memorial1.png')} 
-                    style={styles.image} 
-                  />
-                </View>
+          {/* Memorial Consulting Section */}
+          <View style={styles.iconContainer}>
+            <Text style={styles.title}>Top Memorial Consulting</Text>
+            <Image
+              source={require("../../assets/images/memorial1.png")}
+              style={styles.imageComponent}
+            />
+          </View>
 
-                <TopResultsList
+          {/* Top Headstones */}
+          <TopResultsList
             title="Top Headstones"
-            items={[
-              {
-                name: "Headstone 1",
-                rating: 4.5,
-                reviews: 100,
-                location: "1234 Cemetery Lane",
-                image:
-                  "https://www.thememorialmanllc.com/cdn/shop/products/272775498_4829356283796974_7563527253474323992_n.jpg?v=1644153444",
-              },
-              {
-                name: "Headstone 2",
-                rating: 4.5,
-                reviews: 100,
-                location: "1234 Cemetery Lane",
-                image:
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhpujCunIJ5KOanw8WbgVSqXdNN2wLHLXqWw&s",
-              },
-             
-            ]}
+            items={headstones}
           />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -108,34 +98,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   iconContainer: {
-    // flex:1,
-    margin: 10,
+    flex: 1,
+    margin: 0,
+    alignContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 20,
+    marginLeft: 10,
     fontWeight: "500",
+    alignSelf: "flex-start",
   },
-  image: {
-    width: 335.61,
-    height: 335.61,
-    resizeMode: 'contain',
-  },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  imageComponent: {
+    width: 335,
+    height: 200,
+    borderWidth: 3,
+    margin: 12,
+    borderRadius: 15,
+    borderColor: "rgb(30, 29, 29)",
+    resizeMode: "cover",
   },
 });
 
-export default  home;
+export default Home;

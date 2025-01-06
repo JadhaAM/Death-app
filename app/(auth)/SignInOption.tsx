@@ -8,6 +8,7 @@ import {
   Alert,
   GestureResponderEvent,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -18,20 +19,13 @@ const SignInOption = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { baseURL } = useContext(AuthContext);
-  const handleGoogleLogin = async () => {
-    window.location.href = `${baseURL}/api/user/google`;
-    // setIsLoading(true);
-    // try {
-    //   await axios.get(`${baseURL}/api/user/google`);
-
-    // } catch (error) {
-    //   Alert.alert("Error", "not login with googale");
-    //   console.error(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
-
-  };
+  const handleGoogleLogin = () => {  
+          // Open Google Auth URL in the device's browser  
+          const googleAuthURL = `${baseURL}/api/user/google`;  
+          Linking.openURL(googleAuthURL).catch(err => {  
+              Alert.alert("Error", "Failed to open Google login.");  
+          });  
+      };
 
 
   return (

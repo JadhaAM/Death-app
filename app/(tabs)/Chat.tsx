@@ -1,11 +1,9 @@
 // Import necessary libraries  
 import React, { useContext, useEffect, useState } from 'react';  
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';    
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';    
 import axios from 'axios';  
 import { AuthContext } from '../AuthContext/AuthContext';  
 import { router } from 'expo-router';
-
-
 
 // Define the type for your message  
 interface Message {  
@@ -14,76 +12,83 @@ interface Message {
     timestamp: string;  
     avatar: string; // Assuming you have avatar URLs  
     unreadCount: number; 
-    fullName:String;
-
+    fullName: string;
 }  
 
-const Chat= () => {  
-    const [messages, setMessages] = useState<Message[]>([]);  // Specify Message type for state  
-    const { authUser, baseURL} = useContext(AuthContext);     
+const Chat = () => {  
+    const [messages, setMessages] = useState<Message[]>([]);  
+    const [isLoading, setIsLoading] = useState(true); // Loader state
+    const { authUser, baseURL } = useContext(AuthContext);     
+
     const fetchMessages = async () => {
         try {
-          const response = await axios.get(`${baseURL}/api/chats/${authUser}`);
-        
+            setIsLoading(true); // Show loader
+            const response = await axios.get(`${baseURL}/api/chats/${authUser.userId}`);
             console.log(response.data.data);
             
-          const structuredMessages = response.data.data.map((chat) => ({
-             
-            sender: chat.partnerId,
-            lastMessage: chat.lastMessage.text,
-            timestamp: chat.timestamp,
-            avatar:chat.partner.avatar,
-            fullName:chat.partner.fullName,
-            type: chat.lastMessage.type,
-          }));
-           
-          console.log( "messages :",structuredMessages);
-          setMessages(structuredMessages);
-          
-        } catch (error) {
-          console.error('Error fetching messages: ',  error);
-        }
-      };
-  
-    
-      useEffect(() => {
-        fetchMessages();
-        
-      }, []);   
+            const structuredMessages = response.data.data.map((chat) => ({
+                sender: chat.partnerId,
+                lastMessage: chat.lastMessage.text,
+                timestamp: chat.timestamp,
+                avatar: chat.partner.avatar,
+                fullName: chat.partner.fullName,
+                type: chat.lastMessage.type,
+                unreadCount: chat.unreadCount || 0, // Default to 0 if unreadCount is not provided
+            }));
 
-      
+            console.log("messages: ", structuredMessages);
+            setMessages(structuredMessages);
+        } catch (error) {
+            console.error('Error fetching messages: ', error);
+        } finally {
+            setIsLoading(false); // Hide loader
+        }
+    };
   
-    const renderMessageItem = ({ item }: { item:Message }) => (  
-          
+    useEffect(() => {
+        fetchMessages();
+    }, []);   
+
+    const renderMessageItem = ({ item }: { item: Message }) => (  
         <TouchableOpacity
-      onPress={() =>  router.push({pathname: "/ChatScreen",params: { name:item.fullName ,receiver:item.sender,}, })}
-    >
-      <View style={styles.messageContainer}>
-        <Image source={{ uri: item.avatar }} style={styles.avatar} />
-        <View style={styles.messageContent}>
-          <Text style={styles.sender}>{item.fullName}</Text>
-          <Text style={styles.message}>{item.lastMessage}</Text>
-        </View>
-        <View style={styles.timeContainer}>
-          <Text style={styles.time}>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-          {item.unreadCount > 0 && (
-            <View style={styles.unreadCount}>
-              <Text style={styles.unreadCountText}>{item.unreadCount}</Text>
+            onPress={() => router.push({ pathname: "/ChatScreen", params: { name: item.fullName, receiver: item.sender } })}
+        >
+            <View style={styles.messageContainer}>
+                <Image source={{ uri: item.avatar }} style={styles.avatar} />
+                <View style={styles.messageContent}>
+                    <Text style={styles.sender}>{item.fullName}</Text>
+                    <Text style={styles.message}>{item.lastMessage}</Text>
+                </View>
+                <View style={styles.timeContainer}>
+                    <Text style={styles.time}>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                    {item.unreadCount > 0 && (
+                        <View style={styles.unreadCount}>
+                            <Text style={styles.unreadCountText}>{item.unreadCount}</Text>
+                        </View>
+                    )}
+                </View>
             </View>
-          )}
-        </View>
-      </View>
-    </TouchableOpacity> 
+        </TouchableOpacity> 
     );  
 
     return (  
         <View style={styles.container}>  
             <Text style={styles.title}>Chats</Text>  
-            <FlatList  
-                data={messages}  
-                renderItem={renderMessageItem}  
-                keyExtractor={(item, index) => index.toString()}  
-            />  
+            {isLoading ? (
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color="#4CAF50" />
+                </View>
+            ) : messages.length > 0 ? (
+                <FlatList  
+                    data={messages}  
+                    renderItem={renderMessageItem}  
+                    keyExtractor={(item, index) => index.toString()}  
+                />
+            ) : (
+                <View style={styles.noChatsContainer}>
+                    <Text style={styles.noChatsText}>No Chats</Text>
+                </View>
+            )}
         </View>  
     );  
 };  
@@ -92,11 +97,17 @@ const styles = StyleSheet.create({
     container: {  
         flex: 1,  
         padding: 16,  
-        backgroundColor: '#fff',  
+        backgroundColor: '#fff', 
+        marginTop: 40, 
     },  
     title: {  
         fontSize: 24,  
         marginBottom: 16,  
+    },  
+    loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },  
     messageContainer: {  
         flexDirection: 'row',  
@@ -141,6 +152,15 @@ const styles = StyleSheet.create({
     unreadCountText: {  
         color: '#fff',  
         fontSize: 12,  
+    },  
+    noChatsContainer: {  
+        flex: 1,  
+        justifyContent: 'center',  
+        alignItems: 'center',  
+    },  
+    noChatsText: {  
+        fontSize: 18,  
+        color: '#555',  
     },  
 });   
 

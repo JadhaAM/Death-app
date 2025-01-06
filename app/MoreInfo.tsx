@@ -41,10 +41,10 @@ const StatsList = [
 ];
   
 const MoreInfo = () => {
-  const { title, name, image, rating, location, desc } = useLocalSearchParams();
+  const { title, name, image, rating, location, desc ,id} = useLocalSearchParams();
   const { authUser, setauthUser,setUserId ,userId, setToken , baseURL, setReceiverId} = useContext(AuthContext);
 
-  const StatsItem = ({ title , value, img }) => (
+  const StatsItem = ({ title , value, img  }) => (
     <View style={styles.statsItem}>
       <View style={styles.statsImgCont}>
         <Image source={img} style={styles.statsImg} contentFit="contain" />
@@ -54,30 +54,53 @@ const MoreInfo = () => {
     </View>
   );
 
-  const handleCallPress = () => {
-    const phoneNumber=+16469802390
+  const handleCallPress = async () => {
+    try {
+      console.log(`Business ID: ${id}`);
+      
+      const phoneNumber = "+16469802390"; // Ensure this is in the correct format
+      const businessId = id;
       const phoneURL = `tel:${phoneNumber}`;
   
-      Linking.canOpenURL(phoneURL)
-        .then((supported) => {
-          if (supported) {
-            Linking.openURL(phoneURL);
-          } else {
-            Alert.alert("Error", "Unable to make a call. Calling feature is not supported on this device.");
-          }
+      // Check if the phone app can be opened
+      const supported = await Linking.canOpenURL(phoneURL);
+      if (supported) {
+        // Open the phone dialer
+        await Linking.openURL(phoneURL);
+  
+        // Navigate to ContactLog screen after phone app opens successfully
+        console.log("Phone dialer opened successfully. Navigating to ContactLog...");
+        const Contact =await axios.post(`${baseURL}/api/businesses/create-contact`,{
+          userId:authUser.userId, 
+          businessId:businessId,
         })
-        .catch((err) => console.error("Error opening phone app:", err));
-    };
+        router.push({
+          pathname: "/ContactLog",
+          params: {
+            name: name,
+            businessId: businessId,
+          },
+        });
+      } else {
+        // Alert the user if calling isn't supported
+        Alert.alert(
+          "Error",
+          "Unable to make a call. Calling feature is not supported on this device."
+        );
+      }
+    } catch (err) {
+      // Log any unexpected errors
+      console.error("Error in handleCallPress:", err);
+    }
+  };
+  
+  
 
   const MessagePress = async() => {
     try {
+      console.log(`receiver id :${id}`);
       const fullName=name;
-      const response=  await axios.get(`${baseURL}/api/user/userId`, {
-        params: { identifier: fullName }, // Send username or email as identifier
-    });
-         const  receiverId=response.data.userId
-           console.log(receiverId);
-           setReceiverId(receiverId);
+      const receiverId=id
        router.push({
         pathname: "/ChatScreen",
         params: {

@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   phoneInput: { flex: 1, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingLeft: 10 },
   button: { backgroundColor: "#4F8EF7", borderRadius: 8, paddingVertical: 12, alignItems: "center", marginTop: 10 },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  dropdown: { marginBottom: 20, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, overflow: "hidden" },
+  dropdown: { marginBottom: 10, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, overflow: "hidden" },
   otpContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
   otpInput: { width: 40, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, textAlign: "center", fontSize: 20 },
   errorText: { color: "red", textAlign: "center", marginBottom: 10 },

@@ -54,7 +54,7 @@ const AuthProvider = ({ children }) => {
       } else {
         try {
           const ipAddress = await Network.getIpAddressAsync();
-          setBaseURL(`http://192.168.0.100:3000`);
+          setBaseURL(apiUrl2);
         } catch (error) {
           console.error('Error fetching IP:', error);
           setBaseURL(apiUrl);

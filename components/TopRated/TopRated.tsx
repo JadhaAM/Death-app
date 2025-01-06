@@ -22,17 +22,18 @@ const TopRated = ({ title, items }) => {
             pathname: "/MoreInfo",
             params: {
               title: title,
-              name: item.name,
-              image: item.image,
+              id:item._id,
+              name: item.businessName,
+              image: item.businessImage,
               rating: item.rating,
-              location: item.location || "",
-              desc: item.desc || "",
+              location: item.address || "",
+              desc: item.description || "",
             },
           });
         }}
       >
-        <Image source={item.image} style={styles.itemImg} contentFit="cover" />
-        <Text style={styles.itemTitle}>{item.name}</Text>
+        <Image source={item.businessImage} style={styles.itemImg} contentFit="cover" />
+        <Text style={styles.itemTitle}>{item.businessName}</Text>
         <Text style={styles.itemSubtitle}>{item.open}</Text>
         <View style={styles.ratingsContainer}>
           <Octicons name="star-fill" size={16} color="#FFD33C" />

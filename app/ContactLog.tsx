@@ -1,91 +1,87 @@
-// Import necessary libraries  
 import React, { useContext, useEffect, useState } from 'react';  
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';    
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';    
 import axios from 'axios';  
 import { AuthContext } from './AuthContext/AuthContext';  
-import { router } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router'; 
 import Header from '@/components/Header';
 
-
-
-// Define the type for your message  
 interface Message {  
-    sender: string;  
-    lastMessage: string;  
+    sender: string;   
     timestamp: string;  
-    avatar: string; // Assuming you have avatar URLs  
-    unreadCount: number; 
-    fullName:String;
-
+    businessImage: string;  
+    businessName: string;
+    category: string;
+    address: string;
+    rating: string;
+    description: string;
 }  
 
-const ContactLog= () => {  
-    const [messages, setMessages] = useState<Message[]>([]);  // Specify Message type for state  
-    const { authUser, baseURL} = useContext(AuthContext);     
-    const fetchMessages = async () => {
-        try {
-          const response = await axios.get(`${baseURL}/api/chats/${authUser}`);
-        
-            console.log(response.data.data);
-            
-          const structuredMessages = response.data.data.map((chat) => ({
-             
-            sender: chat.partnerId,
-            lastMessage: chat.lastMessage.text,
-            timestamp: chat.timestamp,
-            avatar:chat.partner.avatar,
-            fullName:chat.partner.fullName,
-            type: chat.lastMessage.type,
-          }));
-           
-          console.log( "messages :",structuredMessages);
-          setMessages(structuredMessages);
-          
-        } catch (error) {
-          console.error('Error fetching messages: ',  error);
-        }
-      };
-  
-    
-      useEffect(() => {
-        fetchMessages();
-        
-      }, []);   
+const ContactLog = () => {  
+    const [messages, setMessages] = useState<Message[]>([]);  
+    const [loading, setLoading] = useState<boolean>(true); // Loader state
+    const { authUser, baseURL } = useContext(AuthContext); 
+    const { businessId } = useLocalSearchParams();      
 
-      
-  
-    const renderMessageItem = ({ item }: { item:Message }) => (  
-          
-        <TouchableOpacity
-      onPress={() =>  router.push({pathname: "/ChatScreen",params: { name:item.fullName ,receiver:item.sender,}, })}
-    >
-      <View style={styles.messageContainer}>
-        <Image source={{ uri: item.avatar }} style={styles.avatar} />
-        <View style={styles.messageContent}>
-          <Text style={styles.sender}>{item.fullName}</Text>
-        </View>
-        <View style={styles.timeContainer}>
-          <Text style={styles.time}>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-          {item.unreadCount > 0 && (
-            <View style={styles.unreadCount}>
-              <Text style={styles.unreadCountText}>{item.unreadCount}</Text>
+    const fetchMessages = async () => {
+        try { 
+            console.log(authUser.userId, "  ", businessId);
+            const response = await axios.get(`${baseURL}/api/businesses/contact-status/${authUser.userId}/${businessId}`);
+            const data = response.data.allContacts.map((list) => ({
+                _id: list.businessId,
+                category: list.category,
+                businessName: list.businessName,
+                businessImage: list.businessImage,
+                address: list.address,
+                rating: list.rating,
+                description: list.description,
+                timestamp: list.timestamp,
+            }));
+            setMessages(data);
+        } catch (error) {
+            console.error('Error fetching messages: ', error);
+        } finally {
+            setLoading(false); // Stop loader after fetch
+        }
+    };
+    
+    useEffect(() => {
+        fetchMessages();
+    }, []);   
+
+    const renderMessageItem = ({ item }: { item: Message }) => (  
+        <TouchableOpacity>
+            <View style={styles.messageContainer}>
+                <Image source={{ uri: item.businessImage }} style={styles.avatar} />
+                <View style={styles.messageContent}>
+                    <Text style={styles.sender}>{item.businessName}</Text>
+                </View>
+                <View style={styles.timeContainer}>
+                    <Text style={styles.time}>
+                        {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                </View>
             </View>
-          )}
-        </View>
-      </View>
-    </TouchableOpacity> 
+        </TouchableOpacity> 
     );  
 
     return (  
         <View style={styles.container}>   
-            <Header title="Contact Bussenness">
-            </Header>
-           
-            <FlatList  
-                data={messages}  
-                renderItem={renderMessageItem}  
-                keyExtractor={(item, index) => index.toString()}  
-            />  
+            <Header title="Contact Business" />
+            {loading ? ( // Show loader while fetching data
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color="#4CAF50" />
+                </View>
+            ) : messages.length === 0 ? ( // Show "No Contact" if no messages
+                <View style={styles.noContactContainer}>
+                    <Text style={styles.noContactText}>No Contact Found</Text>
+                </View>
+            ) : (
+                <FlatList  
+                    data={messages}  
+                    renderItem={renderMessageItem}  
+                    keyExtractor={(item, index) => index.toString()}  
+                />
+            )}
         </View>  
     );  
 };  
@@ -94,12 +90,23 @@ const styles = StyleSheet.create({
     container: {  
         flex: 1,  
         padding: 16,  
-        backgroundColor: '#fff',  
+        backgroundColor: '#fff', 
+        marginTop: 40, 
     },  
-    title: {  
-        fontSize: 24,  
-        marginBottom: 16,  
-    },  
+    loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    noContactContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    noContactText: {
+        fontSize: 18,
+        color: '#999',
+    },
     messageContainer: {  
         flexDirection: 'row',  
         alignItems: 'center',  
@@ -121,10 +128,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',  
         fontSize: 16,  
     },  
-    message: {  
-        marginLeft: 10,  
-        color: '#555',  
-    },  
     timeContainer: {  
         alignItems: 'flex-end',  
         marginLeft: 10,  
@@ -132,17 +135,6 @@ const styles = StyleSheet.create({
     time: {  
         fontSize: 12,  
         color: '#999',  
-    },  
-    unreadCount: {  
-        backgroundColor: '#4CAF50',  
-        borderRadius: 10,  
-        paddingHorizontal: 6,  
-        paddingVertical: 2,  
-        marginTop: 2,  
-    },  
-    unreadCountText: {  
-        color: '#fff',  
-        fontSize: 12,  
     },  
 });   
 

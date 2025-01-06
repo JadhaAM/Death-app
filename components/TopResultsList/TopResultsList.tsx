@@ -26,25 +26,26 @@ const TopResultsList = ({ title, items }) => {
             pathname: "/MoreInfo",
             params: {
               title: title,
-              name: item.name,
-              image: item.image,
+              id:item._id,
+              name: item.businessName,
+              image: item.businessImage,
               rating: item.rating,
-              location: item.location || "",
-              desc: item.desc || "",
+              location: item.address || "",
+              desc: item.description || "",
             },
           });
         }}
       >
         {/* Left Container */}
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image source={item.image} style={styles.itemImage} />
+          <Image source={item.businessImage} style={styles.itemImage} />
           <View style={styles.rightContainer}>
             <View style={styles.rightInnerContainer}>
               <View style={styles.nameContainer}>
-                <Text style={styles.name}>{item.name}</Text>
-                {(item.designation || item.desc || item.location) && (
+                <Text style={styles.name}>{item.businessName}</Text>
+                {(item.designation || item.description || item.address) && (
                   <Text style={styles.designation}>
-                    {item.designation || item.desc || item.location}
+                    {item.designation || item.description || item.address}
                   </Text>
                 )}
               </View>

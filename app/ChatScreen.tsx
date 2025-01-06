@@ -31,8 +31,10 @@ const ChatScreen = () => {
     const [input, setInput] = useState('');  
     const [isTyping, setIsTyping] = useState(false);  
     const { authUser, baseURL } = useContext(AuthContext);  
-    const sender = authUser; // Ensure this is the correct user ID  
+    const sender = authUser.userId; // Ensure this is the correct user ID  
     const { socket }: { socket: WebSocket | null } = useWebSocket();  
+    console.log(`resicerID :${receiver}`);
+    
 
     const fetchMessages = useCallback(async () => {  
         try {  
@@ -220,6 +222,7 @@ const styles = StyleSheet.create({
     container: {  
         flex: 1,  
         backgroundColor: '#fff',  
+        marginTop:40,
     },  
     headerContainer: {  
         flexDirection: 'row',  

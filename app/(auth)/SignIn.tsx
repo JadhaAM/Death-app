@@ -8,6 +8,7 @@ import {
     Alert,
     ActivityIndicator,
     GestureResponderEvent,
+    Linking,
 } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import { Switch } from 'react-native';
@@ -56,12 +57,13 @@ const SignIn = () => {
                 Alert.alert("Success", "Logged in successfully!");
                 AsyncStorage.setItem('authToken', response.data.token);
                 setToken(response.data.token);
-                router.push("/(tabs)/home");
-                // if (isVerified) {
-                //         router.push("/(tabs)/home");
-                //   }else{
-                //     router.push("/(auth)/VerifyOTP");
-                //   } 
+                console.log("isverifyd :",isVerified);
+                
+                if (isVerified){
+                        router.push("/(tabs)/home");
+                  }else{
+                    router.push("/(auth)/VerifyOTP");
+                  } 
             } else if (response.status === 400) {
                 Alert.alert("Error", response.data.message || "An error occurred.");
             } else {
@@ -75,21 +77,13 @@ const SignIn = () => {
         }
     };
 
-    const handleGoogleLogin = async () => {
-//         window.location.href = `${baseURL}/api/user/google`;
-        setIsLoading(true);
-        try {
-          await axios.get(`${baseURL}/api/user/google`);
-    
-        } catch (error) {
-          Alert.alert("Error", "not login with googale");
-          console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
-    
-      };
-
+    const handleGoogleLogin = () => {  
+        // Open Google Auth URL in the device's browser  
+        const googleAuthURL = `${baseURL}/api/user/google`;  
+        Linking.openURL(googleAuthURL).catch(err => {  
+            Alert.alert("Error", "Failed to open Google login.");  
+        });  
+    };
 
 
     return (
