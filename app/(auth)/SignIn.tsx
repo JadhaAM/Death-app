@@ -39,10 +39,7 @@ const SignIn = () => {
 
 
     const handleSubmit = async (values: { email: any; password: any; }) => {
-        if (!isChecked) {
-            Alert.alert("Error", "You must accept Terms and Conditions.");
-            return;
-        }
+        
        
         setIsLoading(true);
         
@@ -54,10 +51,8 @@ const SignIn = () => {
             });
 
             if (response.status === 200) {
-                Alert.alert("Success", "Logged in successfully!");
                 AsyncStorage.setItem('authToken', response.data.token);
                 setToken(response.data.token);
-                console.log("isverifyd :",isVerified);
                 
                 if (isVerified){
                         router.push("/(tabs)/home");
@@ -66,23 +61,25 @@ const SignIn = () => {
                   } 
             } else if (response.status === 400) {
                 Alert.alert("Error", response.data.message || "An error occurred.");
-            } else {
+            }  else {
                 Alert.alert("Error", "Failed to log in. Please try again.");
             }
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || error.message || "An error occurred during log in.";
             Alert.alert("Error", errorMessage);
+            router.push("/(auth)/VerifyOTP");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleGoogleLogin = () => {  
-        // Open Google Auth URL in the device's browser  
+    const handleGoogleLogin = async() => {  
+       
         const googleAuthURL = `${baseURL}/api/user/google`;  
         Linking.openURL(googleAuthURL).catch(err => {  
             Alert.alert("Error", "Failed to open Google login.");  
         });  
+        
     };
 
 
@@ -177,10 +174,10 @@ const SignIn = () => {
 
             {/* Social Login Buttons */}
             <View style={styles.socialContainer}>
-                <TouchableOpacity style={styles.socialButton}>
+                {/* <TouchableOpacity style={styles.socialButton}>
                     <FontAwesome name="facebook" size={20} color="#4267B2" />
                     <Text style={styles.socialButtonText}>Facebook</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity
                     style={styles.socialButton}
                     onPress={handleGoogleLogin as unknown as (event: GestureResponderEvent) => void}
@@ -271,7 +268,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginHorizontal: 5,
     },
-    socialButtonText: { marginLeft: 10, fontSize: 14, color: '#000' },
+    socialButtonText: { marginLeft: 10, fontSize: 14, color: '#000' ,alignItems:"center",alignContent:"center"},
     phoneButton: { padding: 12, borderRadius: 8, alignItems: 'center' },
     phoneButtonText: { fontSize: 14, fontWeight: '500', color: '#000' },
     footerText: { textAlign: 'center', fontSize: 14, color: '#7A7A7A' },

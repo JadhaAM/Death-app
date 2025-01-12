@@ -4,7 +4,7 @@
     "slug": "the-legacy-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/file.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,7 +14,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/file.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.apollonox.thelegacyapp",
@@ -30,7 +30,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/file.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
@@ -45,9 +45,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "254078bc-5e97-4f41-bbb3-cd4c6aaae267"
+        "projectId": "88529025-2de5-4738-a962-dfb8a14f0e35"
       }
     },
-    "owner": "kyotocreative"
+    "owner": "adhirajkyotocreative"
   }
 }

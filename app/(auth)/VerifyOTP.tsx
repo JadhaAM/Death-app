@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import axios from 'axios';
 import  { AuthContext } from "../AuthContext/AuthContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VerifyOTP = () => {
   const router = useRouter();
-  const { authUser ,userId, baseURL ,isVerified ,setVerified} = useContext(AuthContext);
+  const { authUser ,setToken,userId, baseURL ,isVerified ,setVerified} = useContext(AuthContext);
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(20); 
   const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -24,17 +24,25 @@ const VerifyOTP = () => {
    
     setIsLoading(true)
     try {
-      // const userId = await AsyncStorage.getItem('authToken');
-      console.log(authUser);
+      // const userId = await AsyncStorage.setItem('UserId');;
+      let userID=''
+       if (authUser===null) {
+        
+         userID=userId;
+      }else{
+        userID=authUser.userId;
+       }
+      console.log("authUser is:",authUser);
+
+      console.log(userID);
       
-        const response = await axios.post(`${baseURL}/api/user/confirm`, {
+        const response = await axios.post(`${baseURL}/api/user/confirm/${userID}`, {
           confirmationCode:confirmationCode,
-            userID:authUser.userId,
         });
           console.log(response.data.message);
           
         if (response.status === 200) {
-            Alert.alert("Success", response.data.message);
+            
             if (isVerified) {
               router.push("/(auth)/PasswordReset");
             }else{
@@ -42,10 +50,10 @@ const VerifyOTP = () => {
               router.push("/(auth)/SignIn");
             } 
         } else {
-            Alert.alert("Error", "Verification failed. Please try again.");
+            
         }
     } catch (error:any) {
-        console.error("Error verifying user: ", error); 
+        
     } finally {
       setIsLoading(false); 
   }
@@ -88,12 +96,13 @@ const handleKeyPress = (event: unknown, index: number) => {
     }
     return () => clearInterval(countdown);
   }, [timer]);
-
+ 
+   
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Please check your email</Text>
+      <Text style={styles.title}>Please check your email </Text>
       <Text style={styles.subtitle}>
-        We've sent a code to your email. Please enter the code below:
+        We've sent a code to your email.  {authUser.email} Please enter the code below:
       </Text>
       <View style={styles.codeInputContainer}>
       {code.map((digit, index) => (

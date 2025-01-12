@@ -14,136 +14,133 @@ import {
 } from "react-native";  
 import { Formik } from "formik";  
 import * as Yup from "yup";  
-import * as ImagePicker from 'expo-image-picker';  
+import * as ImagePicker from "expo-image-picker";  
 import { Ionicons } from "@expo/vector-icons";  
-import { router } from "expo-router";
-
-type PickedMedia = {  
-  uri: string;  
-  type: string;  
-  fileName: string;  
-} | null;  
-
-interface FormValues {  
-  name: string;  
-}  
+import { router } from "expo-router";  
 
 const EditProfile = () => {  
   const { authUser, baseURL } = useContext(AuthContext);  
   const [isLoading, setIsLoading] = useState(false);  
-  const [media, setMedia] = useState<PickedMedia>(null);  
 
   const validationSchema = Yup.object().shape({  
     name: Yup.string().required("Name is required"),  
   });  
 
-  const pickImage = async () => {  
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();  
-    if (status !== 'granted') {  
-      Alert.alert("Permission required", "You need to grant permission to access the library.");  
-      return;  
-    }  
-    
-    const result = await ImagePicker.launchImageLibraryAsync({  
-      mediaTypes: ImagePicker.MediaTypeOptions.All,  
-      allowsEditing: true,  
-      quality: 1,  
-      aspect: [4, 3],  
-    });  
+  const pickImage = async (setFieldValue) => {  
+    try {  
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();  
+      if (status !== "granted") {  
+        Alert.alert("Permission Denied", "You need to grant camera roll permissions to upload a profile picture.");  
+        return;  
+      }  
 
-    if (result.canceled) {  
-      console.log("User cancelled image picker");  
-    } else if (result.assets?.length) {  
-    
-      
-      const { uri, type, fileName } = result.assets[0];  
-      setMedia({ uri, type, fileName });  
+      const result = await ImagePicker.launchImageLibraryAsync({  
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,  
+        allowsEditing: true,  
+        aspect: [1, 1], // Square cropping  
+        quality: 1,  
+      });  
+
+      if (!result.canceled) {  
+        const uri = result.assets[0].uri;  
+        const fileName = uri.split("/").pop();  
+        const type = `image/${fileName.split(".").pop()}`;  
+
+        setFieldValue("profileImage", { uri, type, fileName });  
+      }  
+    } catch (error) {  
+      console.error("Error picking image:", error);  
+      Alert.alert("Error", "An error occurred while picking the image.");  
     }  
   };  
 
-  const handleSubmit = async (values: FormValues) => {
-    setIsLoading(true);
-    try {
-      const formData = new FormData();
-  
-      // Add profile image if it exists
-      if (media?.uri) {  
-          formData.append("profileImage", {
-            uri: media.uri,
-            name: media.fileName || "image.jpg", 
-            type: media.type || "image/jpeg",
-          }); 
-      }
-      formData.append("fullName", values.name);
-  
-      const url = `${baseURL}/api/user/edit-user/${authUser.userId}`;
-      console.log("Request URL:", url);
-  
-      // Log FormData keys and values
-      formData.forEach((value, key) => {
-        console.log(`Key: ${key}, Value: ${JSON.stringify(value)}`);
-      });
-  
-      const response = await axios.put(url, formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      console.log("Response:", response.data);
-      if (response.status >= 200 && response.status < 300) {
-        Alert.alert("Success", "Profile updated successfully");
-        router.push("/(tabs)/Profile");
-      } else {
-        Alert.alert("Error", "Failed to update profile. Please try again.");
-      }
-    } catch (error: any) {
-      // Handle errors gracefully
-      if (axios.isAxiosError(error)) {
-        console.error("Axios error:", error.message);
-        if (error.response) {
-          console.error("Response data:", error.response.data);
-          console.error("Response status:", error.response.status);
-        } else if (error.request) {
-          console.error("Request details:", error.request);
-          Alert.alert("Error", "No response received from the server.");
-        } else {
-          console.error("Error message:", error.message);
-        }
-        Alert.alert("Error", error.response?.data?.message || error.message);
-      } else {
-        Alert.alert("Error", "An unexpected error occurred.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  
+  const handleSubmit = async (values) => {  
+    setIsLoading(true);  
+    try {  
+      const formData = new FormData();  
+
+      if (values.profileImage) {  
+        formData.append("profileImage", {  
+          uri: values.profileImage.uri,  
+          type: values.profileImage.type,  
+          name: values.profileImage.fileName,  
+        });  
+      }  
+      console.log("the vlues :",values);
+      
+      formData.append("fullName", values.name);  
+ console.log("the from data values",formData);
+ 
+      const userID = authUser.userId;  
+      const response = await axios.put(  
+        `${baseURL}/api/user/edit-user/${userID}`,  
+        formData,  
+        {  
+          headers: {  
+            "Content-Type": "multipart/form-data",  
+          },  
+        }  
+      );  
+
+      if (response.status === 200) {  
+        Alert.alert("Success", "Profile updated successfully");  
+        router.push("/(tabs)/Profile");  
+      } else {  
+        Alert.alert("Error", "Failed to update profile. Please try again.");  
+      }  
+    } catch (error) {  
+      console.error("Error submitting profile update:", error);  
+      Alert.alert("Error", "An error occurred while updating your profile.");  
+    } finally {  
+      setIsLoading(false);  
+    }  
+  };  
+
   return (  
     <View style={styles.container}>  
       <Header title="Edit Profile" />  
-      <View style={styles.imageContainer}>  
-        <View style={styles.imageWrapper}>  
-          {media?.uri ? (  
-            <Image style={styles.image} source={{ uri: media.uri }} />  
-          ) : authUser?.profileImage ? (  
-            <Image style={styles.image} source={{ uri: authUser.profileImage }} />  
-          ) : (  
-            <Ionicons name="image" size={50} color="gray" />  
-          )}  
-        </View>  
-        <TouchableOpacity style={styles.editButton} onPress={pickImage}>  
-          <Text style={styles.editButtonText}>Edit Picture</Text>  
-        </TouchableOpacity>  
-      </View>  
-      <Formik<FormValues>  
-        initialValues={{ name: authUser?.name || "" }}  
+
+      <Formik  
+        initialValues={{  
+          name: "",  
+          profileImage: null,  
+        }}  
         validationSchema={validationSchema}  
         onSubmit={handleSubmit}  
       >  
-        {({ handleChange, handleSubmit, values, errors, touched }) => (  
+        {({  
+          handleChange,  
+          handleSubmit,  
+          setFieldValue,  
+          values,  
+          errors,  
+          touched,  
+        }) => (  
           <>  
+            <View style={styles.imageContainer}>  
+              <View style={styles.imageWrapper}>  
+                {values.profileImage?.uri ? (  
+                  <Image  
+                    style={styles.image}  
+                    source={{ uri: values.profileImage.uri }}  
+                  />  
+                ) : authUser?.profileImage ? (  
+                  <Image  
+                    style={styles.image}  
+                    source={{ uri: authUser.profileImage }}  
+                  />  
+                ) : (  
+                  <Ionicons name="image" size={50} color="gray" />  
+                )}  
+              </View>  
+              <TouchableOpacity  
+                style={styles.editButton}  
+                onPress={() => pickImage(setFieldValue)}  
+              >  
+                <Text style={styles.editButtonText}>Edit Picture</Text>  
+              </TouchableOpacity>  
+            </View>  
+
             <Text style={styles.label}>Full Name</Text>  
             <TextInput  
               style={styles.input}  
@@ -157,8 +154,8 @@ const EditProfile = () => {
 
             <TouchableOpacity  
               style={[styles.button, isLoading ? styles.disabledButton : null]}  
-              onPress={()=>handleSubmit()}  
-              disabled={isLoading || (!values.name && !media?.uri)}  
+              onPress={handleSubmit}  
+              disabled={isLoading || (!values.name && !values.profileImage)}  
             >  
               {isLoading ? (  
                 <ActivityIndicator size="small" color="#ffffff" />  
@@ -178,7 +175,7 @@ const styles = StyleSheet.create({
     flex: 1,  
     padding: 16,  
     backgroundColor: "#fff",  
-    marginTop:40,
+    marginTop: 40,  
   },  
   imageContainer: {  
     flexDirection: "column",  
@@ -233,25 +230,25 @@ const styles = StyleSheet.create({
     fontSize: 16,  
   },  
   editButton: {  
-    backgroundColor: "#4F8EF7", // Change color for the button  
-    paddingVertical: 10, // Vertical padding  
-    paddingHorizontal: 20, // Horizontal padding  
-    borderRadius: 25, // Rounded corners  
-    alignItems: "center", // Center the text  
-    justifyContent: "center", // Center the text  
-    flexDirection: "row", // Allow icon-to-text alignment  
-    elevation: 3, // Android shadow  
-    shadowColor: "#000", // iOS shadow color  
-    shadowOffset: { width: 0, height: 2 }, // iOS shadow offset  
-    shadowOpacity: 0.3, // iOS shadow opacity  
-    shadowRadius: 4, // iOS shadow blur  
+    backgroundColor: "#4F8EF7",  
+    paddingVertical: 10,  
+    paddingHorizontal: 20,  
+    borderRadius: 25,  
+    alignItems: "center",  
+    justifyContent: "center",  
+    flexDirection: "row",  
+    elevation: 3,  
+    shadowColor: "#000",  
+    shadowOffset: { width: 0, height: 2 },  
+    shadowOpacity: 0.3,  
+    shadowRadius: 4,  
   },  
   editButtonText: {  
-    color: "#fff", // Text color  
-    fontWeight: "bold", // Text weight  
-    fontSize: 16, // Text size  
-    marginLeft: 10, // Space between icon and text  
+    color: "#fff",  
+    fontWeight: "bold",  
+    fontSize: 16,  
+    marginLeft: 10,  
   },  
 });  
 
-export default EditProfile;
+export default EditProfile;  

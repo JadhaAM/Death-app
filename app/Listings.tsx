@@ -13,7 +13,7 @@ const Listings = () => {
 
   const parsedList = list ? JSON.parse(list) : [];
 
-  console.log("PPARSED DATA IN LISTINGS-------> ", title, parsedList);
+ 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -21,13 +21,13 @@ const Listings = () => {
         <View>
           <Header title={title} />
           {/* Top Section */}
-          <View style={styles.imageContainer}>
+          {/* <View style={styles.imageContainer}>
             <Searchbar />
             <Image
               source={"https://img.icons8.com/ios/50/sorting-options--v1.png"}
               style={{ height: 30, width: 30 }}
             />
-          </View>
+          </View> */}
 
           <TopRated title={`Top Rated ${title}`} items={parsedList} />
 

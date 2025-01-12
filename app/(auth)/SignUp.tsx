@@ -10,7 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignUp = () => {
 
-    const { setAuthUser, baseURL,isVerified,setSurvyDone, setVerified ,isPhoneVerified ,setPhoneVerified} = useContext(AuthContext);
+    const { authUser,setAuthUser, setUserId,baseURL,isVerified,setSurvyDone, setVerified ,isPhoneVerified ,setPhoneVerified} = useContext(AuthContext);
     const router = useRouter();
     const [isNewsletterEnabled, setNewsletterEnabled] = useState(false);
     const [isTermsChecked, setTermsChecked] = useState(false);
@@ -58,7 +58,10 @@ const SignUp = () => {
                 const { userId } = response.data;
                 console.log(userId);
 
-                setAuthUser(userId);
+                setAuthUser(userId); 
+                setUserId(userId); 
+                console.log(authUser.userId);
+                
                 await AsyncStorage.setItem('UserId', userId);
                 if (isPhoneVerified) {
                     setPhoneVerified(false)
@@ -70,7 +73,9 @@ const SignUp = () => {
                     router.push("/(auth)/SignIn");
                  }else{
 
-                     router.push("/(auth)/VerifyOTP") ;
+                     router.push({
+                        pathname: "/(auth)/VerifyOTP",
+                      }) ;
                  } 
                 
             }

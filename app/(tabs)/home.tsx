@@ -26,7 +26,7 @@ const Home = () => {
   const [headstones, setHeadstones] = useState<BusinessItem[]>([]);
 
   useEffect(() => {
-    if (isSurvyDone) {
+    if(!isSurvyDone) {
       router.push("/(auth)/Survey");
     }
   }, [isSurvyDone]);

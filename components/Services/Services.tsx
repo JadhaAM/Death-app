@@ -79,7 +79,6 @@ const Services = () => {
       });
     } catch (error) {
       setLoading(false);
-      console.error("Error fetching service data:", error);
     }
   };
 

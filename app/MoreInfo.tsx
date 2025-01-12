@@ -73,14 +73,17 @@ const MoreInfo = () => {
         const Contact =await axios.post(`${baseURL}/api/businesses/create-contact`,{
           userId:authUser.userId, 
           businessId:businessId,
-        })
-        router.push({
-          pathname: "/ContactLog",
-          params: {
-            name: name,
-            businessId: businessId,
-          },
-        });
+        }) 
+        if (Contact.status===201) {
+          router.push({
+            pathname: "/ContactLog",
+            params: {
+              name: name,
+              businessId: businessId,
+            }
+          });
+        }
+
       } else {
         // Alert the user if calling isn't supported
         Alert.alert(

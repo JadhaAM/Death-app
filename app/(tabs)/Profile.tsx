@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Linking } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Linking ,Modal} from "react-native";
 import { useRouter } from "expo-router";
 import { FontAwesome, MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
 import axios from "axios";
@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Profile = () => {
   const router = useRouter();
   const { authUser, setauthUser,setUserId ,userId, setToken , baseURL} = useContext(AuthContext);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const fetchUserData = async () => {
 
@@ -19,10 +20,7 @@ const Profile = () => {
 
 
       setUserId(response.data.user);
-    } catch (error) {
-      console.log(error);
-      
-      Alert.alert("Error", "Failed to fetch user data");
+    } catch (error) { 
     }
   };
   const clearAuthToken = async () => {
@@ -37,11 +35,11 @@ const Profile = () => {
   const handleSignOut = async () => {
     try {
       await axios.get(`${baseURL}/api/user/logout`);
-      Alert.alert("Success", "You have been signed out");
-      clearAuthToken();
+      
+      
       router.push("/(auth)/SignIn");
     } catch (error) {
-      Alert.alert("Error", "Failed to sign out");
+    
 
     }
     
@@ -64,12 +62,24 @@ const Profile = () => {
       })
       .catch((err) => console.error("Error opening WhatsApp:", err));
   };
-   const handelLegal=()=>{
-     const LegalURL = `https://docs.google.com/document/d/1AQA8Y22eK6LOwhEB5o5vApD4Fd_PlAUG5ice6DF2EO8/edit`;  
-            Linking.openURL(LegalURL).catch(err => {  
-                Alert.alert("Error", "Failed to open Google login.");  
-            });
-   }
+  const handleTermsAndConditions = () => {
+    const termsURL = `https://drive.google.com/file/d/1TgylF2iXPhb0EyojtOG3zI8FFaK3h2ZN/view?usp=sharing`;
+    Linking.openURL(termsURL).catch((err) =>
+      Alert.alert("Error", "Failed to open Terms and Conditions.")
+    );
+  };
+
+  const handlePrivacyPolicy = () => {
+    const policyURL = `https://drive.google.com/file/d/165j4uxjdjjZKsKtVJ97fQiMv4jnHsjt9/view?usp=sharing`;
+    Linking.openURL(policyURL).catch((err) =>
+      Alert.alert("Error", "Failed to open Privacy Policy.")
+    );
+  };
+
+  // Toggle modal visibility
+  const handleLegal = () => {
+    setModalVisible(true);
+  };
 
   useEffect(() => {
     fetchUserData();
@@ -86,15 +96,15 @@ const Profile = () => {
         }} style={styles.avatar} />
         <View>
           <Text style={styles.userName}>Hi, {userId.fullName}</Text>
-          <Text style={styles.userAge}>{ } Year old</Text>
+          {/* <Text style={styles.userAge}>{ } Year old</Text> */}
         </View>
       </View>
 
       {/* Menu Items */}
-      <TouchableOpacity style={styles.menuItem}  onPress={()=>router.push("/EditProfile")} >
+      {/* <TouchableOpacity style={styles.menuItem}  onPress={()=>router.push("/EditProfile")} >
         <FontAwesome name="edit" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Edit Profile</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <TouchableOpacity style={styles.menuItem} onPress={()=>router.push("/ContactLog")}>
         <Ionicons name="business-outline" size={24} color="#4A4A4A" />
@@ -102,10 +112,41 @@ const Profile = () => {
       </TouchableOpacity>
 
 
-      <TouchableOpacity style={styles.menuItem} onPress={handelLegal}>
+      <TouchableOpacity style={styles.menuItem} onPress={handleLegal}>
         <Ionicons name="document-text-outline" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Legal</Text>
       </TouchableOpacity>
+       {/* Modal for Legal Options */}
+       <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Legal Options</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={handleTermsAndConditions}
+            >
+              <Text style={styles.modalButtonText}>Terms and Conditions</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={handlePrivacyPolicy}
+            >
+              <Text style={styles.modalButtonText}>Privacy Policy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <TouchableOpacity style={styles.menuItem} onPress={handelopenWhatsApp} >
         <Ionicons name="logo-whatsapp" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Contact Us</Text>
@@ -157,6 +198,50 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#4A4A4A",
     marginLeft: 15,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  modalButton: {
+    marginVertical: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#4A90E2",
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  modalCloseButton: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#d9534f",
+    borderRadius: 5,
+    width: "100%",
+    alignItems: "center",
+  },
+  modalCloseButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 

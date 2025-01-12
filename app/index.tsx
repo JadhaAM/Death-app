@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,19 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  
 } from 'react-native';
-import { useRouter } from 'expo-router'; 
+import { router, useRouter } from 'expo-router'; 
+import { jwtDecode } from 'jwt-decode';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from './AuthContext/AuthContext';
+
+
 
 const SplashScreen = () => {
   const router = useRouter();
-
+  const {setAuthUser ,setToken}=useContext(AuthContext);
+  
   return (
     <View style={styles.container}>
       {/* Icon */}

@@ -1,42 +1,35 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Image } from "expo-image";
 import Fontisto from "@expo/vector-icons/Fontisto";
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 const TopResultsList = ({ title, items }) => {
-  const navigation = useNavigation();
   const router = useRouter();
 
-  console.log("Data in top results ------>", title, items);
+  const handlePress = (item) => {
+    router.push({
+      pathname: "/MoreInfo",
+      params: {
+        title: title,
+        id: item._id,
+        name: item.businessName,
+        image: item.businessImage,
+        rating: item.rating,
+        location: item.address || "",
+        desc: item.description || "",
+      },
+    });
+  };
 
   const ListItem = ({ item }) => {
     return (
       <TouchableOpacity
         style={styles.listItemContainer}
-        onPress={() => {
-          router.push({
-            pathname: "/MoreInfo",
-            params: {
-              title: title,
-              id:item._id,
-              name: item.businessName,
-              image: item.businessImage,
-              rating: item.rating,
-              location: item.address || "",
-              desc: item.description || "",
-            },
-          });
-        }}
+        onPress={() => handlePress(item)}
+        activeOpacity={0.8} // Added activeOpacity for better feedback
       >
-        {/* Left Container */}
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Image source={item.businessImage} style={styles.itemImage} />
           <View style={styles.rightContainer}>
@@ -51,13 +44,7 @@ const TopResultsList = ({ title, items }) => {
               </View>
               {item.availability && item.fees && (
                 <View style={styles.nameContainer}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 2,
-                    }}
-                  >
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
                     <Fontisto name="clock" size={10} color="#333333" />
                     <Text style={styles.availability}>{item.availability}</Text>
                   </View>
@@ -99,7 +86,7 @@ const TopResultsList = ({ title, items }) => {
       <FlatList
         data={items}
         renderItem={({ item }) => <ListItem item={item} />}
-        keyExtractor={(item) => item.name}
+        keyExtractor={(item) => item._id.toString()} // Changed to use _id for unique keys
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           padding: 10,
@@ -107,6 +94,9 @@ const TopResultsList = ({ title, items }) => {
           paddingTop: 20,
           gap: 10,
         }}
+        ListEmptyComponent={
+          <Text style={styles.emptyMessage}>No items available.</Text> // Handle empty data case
+        }
       />
     </View>
   );
@@ -202,5 +192,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
     elevation: 5,
+  },
+  emptyMessage: {
+    fontSize: 16,
+    color: "#333333",
+    textAlign: "center",
+    marginTop: 20,
   },
 });

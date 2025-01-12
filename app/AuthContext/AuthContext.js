@@ -20,7 +20,6 @@ const AuthProvider = ({ children }) => {
   const [receiverId,setReceiverId] =useState('');
   
      
-
  useEffect(() => {
   const fetchUser  = async () => {
    try {
@@ -50,7 +49,7 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchBaseURL = async () => {
       if (Platform.OS === 'web') {
-        setBaseURL(apiUrl);
+        setBaseURL(apiUrl2);
       } else {
         try {
           const ipAddress = await Network.getIpAddressAsync();

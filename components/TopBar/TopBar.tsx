@@ -5,27 +5,14 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import Searchbar from "./Searchbar";
 import { AuthContext } from "@/app/AuthContext/AuthContext";
 import axios from "axios";
-import { router, useLocalSearchParams } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { jwtDecode } from 'jwt-decode';
+import { router } from "expo-router";
+
 
 const TopBar = () => {
   const { authUser, setAuthUser, baseURL ,setUserId ,userId } = useContext(AuthContext);
-  const { token } = useLocalSearchParams();
+  
   const [user,setUser]=useState();
-  useEffect(() => {
-    // Check if there's a token in the URL  
-    if (token) {
-
-      // // Verify and decode the token  
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken.userId;     
-      AsyncStorage.setItem('authToken', userId);
-      setAuthUser(userId);
-    } else {
-      console.log("No token found");
-    }
-  }, [token]);
+ 
   const fetchUserData = async () => {
 
     try {
@@ -37,17 +24,14 @@ const TopBar = () => {
 
       setUser(response.data.user);
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch user data");
-      console.error(error);
+      
+     
     }
   };
    
   useEffect(() => {
     fetchUserData();
-  }, []);
-  console.log(authUser);
-  console.log(user);
-  
+  }, []);  
   
   return (
     <View style={styles.container}>
@@ -74,13 +58,13 @@ const TopBar = () => {
         <Text style={styles.name}> {userId.fullName}!</Text>
       </View>
 
-      <View style={styles.imageContainer}>
+      {/* <View style={styles.imageContainer}>
         <Searchbar />
         <Image
           source={"https://img.icons8.com/ios/50/sorting-options--v1.png"}
           style={{ height: 30, width: 30 }}
         />
-      </View>
+      </View> */}
     </View>
   );
 };

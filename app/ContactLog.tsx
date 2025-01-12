@@ -24,10 +24,10 @@ const ContactLog = () => {
 
     const fetchMessages = async () => {
         try { 
-            console.log(authUser.userId, "  ", businessId);
-            const response = await axios.get(`${baseURL}/api/businesses/contact-status/${authUser.userId}/${businessId}`);
+            const userId=authUser.userId;
+            const response = await axios.get(`${baseURL}/api/businesses/contact-status/${userId}/${businessId}`);
             const data = response.data.allContacts.map((list) => ({
-                _id: list.businessId,
+                _id: list.contactId,
                 category: list.category,
                 businessName: list.businessName,
                 businessImage: list.businessImage,
@@ -38,7 +38,7 @@ const ContactLog = () => {
             }));
             setMessages(data);
         } catch (error) {
-            console.error('Error fetching messages: ', error);
+        
         } finally {
             setLoading(false); // Stop loader after fetch
         }
@@ -66,7 +66,7 @@ const ContactLog = () => {
 
     return (  
         <View style={styles.container}>   
-            <Header title="Contact Business" />
+            <Header title="Contacted Businesses" />
             {loading ? ( // Show loader while fetching data
                 <View style={styles.loaderContainer}>
                     <ActivityIndicator size="large" color="#4CAF50" />
