@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const VerifyOTP = () => {
   const router = useRouter();
   const { authUser ,setToken,userId, baseURL ,isVerified ,setVerified} = useContext(AuthContext);
+  const {Email}=useLocalSearchParams();
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(20); 
   const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -25,15 +26,9 @@ const VerifyOTP = () => {
     setIsLoading(true)
     try {
       // const userId = await AsyncStorage.setItem('UserId');;
-      let userID=''
-       if (authUser===null) {
-        
-         userID=userId;
-      }else{
-        userID=authUser.userId;
-       }
-      console.log("authUser is:",authUser);
+      let userID = authUser?.userId ?? userId;
 
+      console.log("authUser is:", authUser);
       console.log(userID);
       
         const response = await axios.post(`${baseURL}/api/user/confirm/${userID}`, {
@@ -96,13 +91,13 @@ const handleKeyPress = (event: unknown, index: number) => {
     }
     return () => clearInterval(countdown);
   }, [timer]);
- 
+  const email = authUser?.email ?? Email;
    
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Please check your email </Text>
       <Text style={styles.subtitle}>
-        We've sent a code to your email.  {authUser.email} Please enter the code below:
+        We've sent a code to your email.  {email} Please enter the code below:
       </Text>
       <View style={styles.codeInputContainer}>
       {code.map((digit, index) => (

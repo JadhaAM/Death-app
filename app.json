@@ -10,6 +10,9 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "infoPlist":[
+        "tel"
+      ],
       "bundleIdentifier": "com.apollonox.thelegacyapp"
     },
     "android": {
@@ -17,6 +20,10 @@
         "foregroundImage": "./assets/images/file.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions":[
+        "CALL_PHONE",
+        "READ_PHONE_STATE"
+      ],
       "package": "com.apollonox.thelegacyapp",
       "googleServicesFile": "./google-services.json"
     },

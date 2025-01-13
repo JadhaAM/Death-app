@@ -64,7 +64,7 @@ const ChatScreen = () => {
             // ws.send(JSON.stringify({ type: 'registerUser', userId: sender }));
             // ws.send(JSON.stringify({ type: 'registerUser', userId: receiver }));
         };
-        // ws.onerror = (error) => console.error('WebSocket error:', error);
+        ws.onerror = (error) => console.error('WebSocket error:', error);
         ws.onclose = () => {
             console.log('WebSocket disconnected');
             setSocket(null); // Reset socket state  

@@ -18,7 +18,7 @@ interface Question {
 const Survey: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | null>>({});
-  const { baseURL, authUser, setSurvyDone } = useContext(AuthContext);
+  const { baseURL, authUser, setSurvyDone , userId} = useContext(AuthContext);
 
   const questions: Question[] = [
     {
@@ -127,6 +127,10 @@ const Survey: React.FC = () => {
   
 
     try {
+      let userId = authUser?.userId ?? userId;
+
+      console.log("authUser is:", authUser);
+      console.log(userId);
       const response = await axios.post(`${baseURL}/api/user/survey/submit-survey`, {
         userId: authUser.userId,
         responses: responses,

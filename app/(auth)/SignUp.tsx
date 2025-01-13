@@ -75,6 +75,9 @@ const SignUp = () => {
 
                      router.push({
                         pathname: "/(auth)/VerifyOTP",
+                        params:{
+                            Email:values.email
+                        }
                       }) ;
                  } 
                 
