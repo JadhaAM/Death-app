@@ -101,10 +101,10 @@ const Profile = () => {
       </View>
 
       {/* Menu Items */}
-      {/* <TouchableOpacity style={styles.menuItem}  onPress={()=>router.push("/EditProfile")} >
+      <TouchableOpacity style={styles.menuItem}  onPress={()=>router.push("/EditProfile")} >
         <FontAwesome name="edit" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Edit Profile</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuItem} onPress={()=>router.push("/ContactLog")}>
         <Ionicons name="business-outline" size={24} color="#4A4A4A" />

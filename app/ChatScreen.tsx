@@ -55,7 +55,7 @@ const ChatScreen = () => {
     }, [sender, receiver, baseURL]);
 
     useEffect(() => {
-        const ws = new WebSocket(socketUrl);
+        const ws = new WebSocket("ws://100.193.144.121:3000");
         setSocket(ws);
 
         ws.onopen = () => {

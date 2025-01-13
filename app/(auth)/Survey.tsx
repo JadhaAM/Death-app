@@ -127,12 +127,12 @@ const Survey: React.FC = () => {
   
 
     try {
-      let userId = authUser?.userId ?? userId;
+      let getuserid = authUser?.userId ?? userId;
 
       console.log("authUser is:", authUser);
-      console.log(userId);
+      console.log(getuserid);
       const response = await axios.post(`${baseURL}/api/user/survey/submit-survey`, {
-        userId: authUser.userId,
+        userId: getuserid,
         responses: responses,
       });
 
