@@ -55,6 +55,8 @@ const SignUp = () => {
             });
             if (response.status === 201) {
                 Alert.alert("Success", "sign in successfully!");
+                console.log(response.data);
+                
                 const { userId } = response.data;
                 console.log(userId);
 

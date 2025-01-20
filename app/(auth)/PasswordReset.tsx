@@ -90,7 +90,7 @@ const PasswordResetScreen = () => {
       </Formik>
 
       <Text style={styles.footer}>
-        Already have an account? <Text style={styles.loginText} onPress={() => Alert.alert('Log In')}>Log In</Text>
+        Already have an account? <Text style={styles.loginText} onPress={() => router.push("/(auth)/SignIn")}>Log In</Text>
       </Text>
     </View>
   );

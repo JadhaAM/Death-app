@@ -13,11 +13,14 @@ interface BusinessItem {
   businessName: string;
   rating: number;
   reviews: number;
+  category:String,
   designation?: string; // For attorneys
   availability?: string; // For attorneys
   fees?: string; // For attorneys
   location?: string; // For headstones
   businessImage: string;
+  phoneNumber:Number;
+  businessImages:String;
 }
 
 const Home = () => {
@@ -38,12 +41,19 @@ const Home = () => {
         _id: item._id,
         businessName: item.businessName,
         rating: item.rating,
+        category: item.category,
         reviews: item.reviews || 0,
-        designation: item.designation, // Only for attorneys
+        description: item.description, // Only for attorneys
         availability: item.availability, // Only for attorneys
         fees: item.fees, // Only for attorneys
-        location: item.address, // Only for headstones
-        businessImage: item.businessImage,
+        clients: item.clients, // Only for attorneys
+        years: item.years, // Only for attorneys
+        address: item.address, // Only for headstones
+        priceStartsFrom: item.priceStartsFrom, // Only for headstones
+        businessImage: item.headstoneImage,
+        phoneNumber: item.phoneNumber,
+        businessImages: item.businessImages,
+        headstoneNames: item.headstoneNames,
       }));
       setData(data);
     } catch (error) {

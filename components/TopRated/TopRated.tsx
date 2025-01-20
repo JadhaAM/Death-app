@@ -23,6 +23,7 @@ const TopRated = ({ title, items }) => {
             params: {
               title: title,
               id:item._id,
+              category:item.category,
               name: item.businessName,
               image: item.businessImage,
               rating: item.rating,
@@ -32,7 +33,11 @@ const TopRated = ({ title, items }) => {
           });
         }}
       >
-        <Image source={item.businessImage} style={styles.itemImg} contentFit="cover" />
+        <Image source={{
+              uri:
+                item.businessImage || item.businessImages[0]
+                
+            }} style={styles.itemImg} contentFit="cover" />
         <Text style={styles.itemTitle}>{item.businessName}</Text>
         <Text style={styles.itemSubtitle}>{item.open}</Text>
         <View style={styles.ratingsContainer}>

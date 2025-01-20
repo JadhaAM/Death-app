@@ -54,51 +54,62 @@ const EditProfile = () => {
     }  
   };  
 
-  const handleSubmit = async (values) => {  
-    setIsLoading(true);  
-    try {  
-      const formData = new FormData();  
+  const handleSubmit = async (values) => {
+  
+    setIsLoading(true);
+  
+    try {
+      const formData = new FormData();
+   console.log("value of profile image :",values.profileImage);
+   
+      // Append profile image
+      if (values.profileImage) {
+        formData.append("profileImage", {
+          uri: values.profileImage.uri,
+          type: values.profileImage.type || "image/jpeg", // Ensure MIME type
+          name: values.profileImage.fileName || "profile.jpg", // Default filename
+        });
+      }
 
-      if (values.profileImage) {  
-        formData.append("profileImage", {  
-          uri: values.profileImage.uri,  
-          type: values.profileImage.type,  
-          name: values.profileImage.fileName,  
-        });  
-      }  
-      console.log("the vlues :",values);
+  
+      // Append full name
+      formData.append("fullName", values.name);
+  
+      console.log("FormData contents:", formData);
+  
+      const userID = authUser.userId;
+  
+      // Make the API call
+      const response = await axios.put(
+        `${baseURL}/api/user/edit-user/${userID}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("response data",response);
       
-      formData.append("fullName", values.name);  
- console.log("the from data values",formData);
- 
-      const userID = authUser.userId;  
-      const response = await axios.put(  
-        `${baseURL}/api/user/edit-user/${userID}`,  
-        formData,  
-        {  
-          headers: {  
-            "Content-Type": "multipart/form-data",  
-          },  
-        }  
-      );  
-
-      if (response.status === 200) {  
-        Alert.alert("Success", "Profile updated successfully");  
-        router.push("/(tabs)/Profile");  
-      } else {  
-        Alert.alert("Error", "Failed to update profile. Please try again.");  
-      }  
-    } catch (error) {  
-      console.error("Error submitting profile update:", error);  
-      Alert.alert("Error", "An error occurred while updating your profile.");  
-    } finally {  
-      setIsLoading(false);  
-    }  
-  };  
+      if (response.status === 200) {
+        Alert.alert("Success", "Profile and images updated successfully!");
+        router.push("/(tabs)/Profile");
+      } else {
+        Alert.alert("Error", "Failed to update profile. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating profile and images:", error);
+      Alert.alert("Error", "An error occurred while updating your profile.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
 
   return (  
     <View style={styles.container}>  
       <Header title="Edit Profile" />  
+      
 
       <Formik  
         initialValues={{  

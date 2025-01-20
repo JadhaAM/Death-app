@@ -10,9 +10,15 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "infoPlist":[
-        "tel"
-      ],
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "whatsapp",
+          "tel"
+        ],
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true
+        }
+      },
       "bundleIdentifier": "com.apollonox.thelegacyapp"
     },
     "android": {
@@ -20,9 +26,28 @@
         "foregroundImage": "./assets/images/file.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions":[
+      "permissions": [
         "CALL_PHONE",
-        "READ_PHONE_STATE"
+        "READ_PHONE_STATE",
+        "SEND_SMS"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "wa.me"
+            },
+            {
+              "scheme": "whatsapp"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ],
       "package": "com.apollonox.thelegacyapp",
       "googleServicesFile": "./google-services.json"

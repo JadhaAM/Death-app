@@ -35,7 +35,7 @@ const Profile = () => {
   const handleSignOut = async () => {
     try {
       await axios.get(`${baseURL}/api/user/logout`);
-      
+     
       
       router.push("/(auth)/SignIn");
     } catch (error) {

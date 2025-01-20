@@ -26,12 +26,10 @@ const VerifyOTP = () => {
     setIsLoading(true)
     try {
       // const userId = await AsyncStorage.setItem('UserId');;
-      console.log("user id from backend :",userId);
-      
-      let userID = authUser?.userId ?? userId;
+       console.log(userId);
+       
+      let userID =userId;
 
-      console.log("authUser is:", authUser);
-      console.log("userID get :",userID);
       
         const response = await axios.post(`${baseURL}/api/user/confirm/${userID}`, {
           confirmationCode:confirmationCode,

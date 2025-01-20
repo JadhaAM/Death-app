@@ -133,6 +133,10 @@ function AppContent() {
         <Stack.Screen name="NotificationScreen" options={{ headerShown: false }} />
         <Stack.Screen name="MoreInfo" options={{ headerShown: false }} />
         <Stack.Screen name="EditProfile" options={{ headerShown: false }} />
+        <Stack.Screen name="AdminChat" options={{ headerShown: false }} />
+        <Stack.Screen name="ViewGallary" options={{ headerShown: false }} />
+        <Stack.Screen name="PartnerForm" options={{ headerShown: false }} />
+        <Stack.Screen name="EditBussnesses" options={{ headerShown: false }} />
         <Stack.Screen name="ContactLog" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>

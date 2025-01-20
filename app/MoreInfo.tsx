@@ -21,16 +21,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import { AuthContext } from "./AuthContext/AuthContext";
+import HeadstonesList from "@/components/TopResultsList/HeadstonesList";
 
 const StatsList = [
   {
     title: "Years",
-    value: "116",
+    value: years,
     img: years,
   },
   {
     title: "Clients",
-    value: "120",
+    value: clients,
     img: clients,
   },
   {
@@ -39,12 +40,13 @@ const StatsList = [
     img: reviews,
   },
 ];
-  
-const MoreInfo = () => {
-  const { title, name, image, rating, location, desc ,id} = useLocalSearchParams();
-  const { authUser, setauthUser,setUserId ,userId, setToken , baseURL, setReceiverId} = useContext(AuthContext);
 
-  const StatsItem = ({ title , value, img  }) => (
+const MoreInfo = () => {
+  const { title, name, fees, role, image, rating, location, desc, category, id, phoneNumber, years,
+    clients, priceStartsFrom, businessImages, headstoneNames } = useLocalSearchParams();
+  const { authUser, setauthUser, setUserId, userId, setToken, baseURL, setReceiverId } = useContext(AuthContext);
+
+  const StatsItem = ({ title, value, img }) => (
     <View style={styles.statsItem}>
       <View style={styles.statsImgCont}>
         <Image source={img} style={styles.statsImg} contentFit="contain" />
@@ -54,27 +56,36 @@ const MoreInfo = () => {
     </View>
   );
 
+  // Dynamically build the `items` array
+  const parsedBusinessImages = businessImages ? JSON.parse(businessImages) : [];
+  const parsedHeadstoneNames = headstoneNames ? JSON.parse(headstoneNames) : [];
+  const items = parsedHeadstoneNames.map((headstoneName, index) => ({
+    _id: index.toString(),
+    name: headstoneName,
+    image: parsedBusinessImages[index] || "https://via.placeholder.com/150", // Default image if missing
+    priceRange: priceStartsFrom || "$0.00 - $0.00", // Default price range
+  }));
   const handleCallPress = async () => {
     try {
       console.log(`Business ID: ${id}`);
-      
-      const phoneNumber = "+16469802390"; // Ensure this is in the correct format
+
+
       const businessId = id;
       const phoneURL = `tel:${phoneNumber}`;
-  
+
       // Check if the phone app can be opened
       const supported = await Linking.canOpenURL(phoneURL);
       if (supported) {
         // Open the phone dialer
         await Linking.openURL(phoneURL);
-  
+
         // Navigate to ContactLog screen after phone app opens successfully
         console.log("Phone dialer opened successfully. Navigating to ContactLog...");
-        const Contact =await axios.post(`${baseURL}/api/businesses/create-contact`,{
-          userId:authUser.userId, 
-          businessId:businessId,
-        }) 
-        if (Contact.status===201) {
+        const Contact = await axios.post(`${baseURL}/api/businesses/create-contact`, {
+          userId: authUser.userId,
+          businessId: businessId,
+        })
+        if (Contact.status === 201) {
           router.push({
             pathname: "/ContactLog",
             params: {
@@ -96,51 +107,28 @@ const MoreInfo = () => {
       console.error("Error in handleCallPress:", err);
     }
   };
-  
-  
 
-  const MessagePress = async() => {
+
+
+  const MessagePress = async () => {
     try {
       console.log(`receiver id :${id}`);
-      const fullName=name;
-      const receiverId=id
-       router.push({
+      const fullName = name;
+      const receiverId = id
+      router.push({
         pathname: "/ChatScreen",
         params: {
           name: name,
-          receiver:receiverId,
+          receiver: receiverId,
         },
       });
     } catch (error) {
-      console.log("user id error :",error);
-      
-    }
-  
-      
-    
-    // console.log("function call");
-    
-    // try {
+      console.log("user id error :", error);
 
-    //   const response = await axios.post(`${baseURL}/api/chats/messages`,{
-    //     sender:authUser,
-    //   });   
-    //   console.log("on going");
-      
-    //   router.push({
-    //     pathname: "/ChatScreen",
-    //     params: {
-    //       name: name,
-    //       image: image,
-          
-    //     },
-    //   });
-      
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    };
-    
+    }
+
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -150,12 +138,13 @@ const MoreInfo = () => {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Image */}
         <View style={styles.imageContainer}>
-          <Image
+        <Image
             style={styles.productImg}
-            source={
-              image ||
-              "https://images.unsplash.com/photo-1680821488873-8ecaf386a554?q=80&w=2068&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            }
+            source={{
+              uri:
+                image || parsedBusinessImages[0]
+                
+            }}
           />
           <TouchableOpacity style={styles.likeBtn}>
             <Ionicons name="heart-outline" size={22} color="#3E69FE" />
@@ -168,7 +157,11 @@ const MoreInfo = () => {
         <View>
           {/* Name and rating */}
           <View style={styles.nameCont}>
-            <Text style={styles.name}>{name}</Text>
+            <View><Text style={styles.name}>{name}</Text>
+              <Text style={styles.Subname}>{role }</Text>
+              <Text style={styles.Subname}>Fees: start from ${fees}</Text>
+            </View>
+
             <View style={styles.ratingCont}>
               <Octicons name="star-fill" size={24} color="#FFD33C" />
               <Text style={styles.rating}>{rating} (96 reviews)</Text>
@@ -194,11 +187,12 @@ const MoreInfo = () => {
         <View style={{ marginTop: 15 }}>
           <Text style={styles.infoTitle}>About this cemetery</Text>
           <Text style={styles.infoValue}>
-            {desc ||
-              "Gutterman’s is a family owned and operated funeral home that has been serving the Jewish community of New York City since 1892. With over 100 years of experience directing Jewish funerals, Gutterman’s is one of the largest family owned and operated firms of its kind in the nation."}
+            {desc}
           </Text>
         </View>
-
+        {category === "Headstones" && items.length > 0 && (
+          <HeadstonesList title="Headstones available" items={items} />
+        )}
         {/* ------------------------ Bottom Container --------------------- */}
         {/* CTA buttons */}
         <View style={styles.ctaBtnsCont}>
@@ -216,7 +210,7 @@ const MoreInfo = () => {
               size={24}
               color="#fff"
             />
-            <Text style={styles.ctnBtnText}  onPress={MessagePress}>Message</Text>
+            <Text style={styles.ctnBtnText} onPress={MessagePress}>Message</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -258,6 +252,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 18,
     fontWeight: "bold",
+    flex: 1,
+  },
+  Subname: {
+    fontSize: 18,
+    fontWeight: "normal",
     flex: 1,
   },
   rating: {

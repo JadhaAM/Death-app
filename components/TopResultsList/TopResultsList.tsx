@@ -13,16 +13,25 @@ const TopResultsList = ({ title, items }) => {
       pathname: "/MoreInfo",
       params: {
         title: title,
+        category:item.category,
         id: item._id,
         name: item.businessName,
+        fees: item.fees,
+        years: item.fees,
+        clients: item.clients,
         image: item.businessImage,
+        phoneNumber:item.phoneNumber,
+        priceStartsFrom:item.priceStartsFrom,
         rating: item.rating,
         location: item.address || "",
         desc: item.description || "",
+        businessImages: JSON.stringify(item.businessImages), // Pass as JSON string
+        headstoneNames: JSON.stringify(item.headstoneNames), 
       },
     });
-  };
-
+  }; 
+  
+ 
   const ListItem = ({ item }) => {
     return (
       <TouchableOpacity
@@ -31,7 +40,11 @@ const TopResultsList = ({ title, items }) => {
         activeOpacity={0.8} // Added activeOpacity for better feedback
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image source={item.businessImage} style={styles.itemImage} />
+          <Image source={{
+              uri:
+                item.businessImage || item.businessImages[0]
+                
+            }} style={styles.itemImage} />
           <View style={styles.rightContainer}>
             <View style={styles.rightInnerContainer}>
               <View style={styles.nameContainer}>
@@ -42,15 +55,20 @@ const TopResultsList = ({ title, items }) => {
                   </Text>
                 )}
               </View>
-              {item.availability && item.fees && (
+              {(item.availability || item.fees) && (
                 <View style={styles.nameContainer}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
                     <Fontisto name="clock" size={10} color="#333333" />
-                    <Text style={styles.availability}>{item.availability}</Text>
+                    <Text style={styles.availability}>
+                      {item.availability || "Not Available"} {/* Default value */}
+                    </Text>
                   </View>
-                  <Text style={styles.designation}>Fees: {item.fees}</Text>
+                  <Text style={styles.designation}>
+                  Starts from:$ {item.fees ? `${item.fees}` : "Starts from "} {/* Default value */}
+                  </Text>
                 </View>
               )}
+
             </View>
             <View style={styles.rightCornerContainer}>
               <View style={styles.ratingItem}>

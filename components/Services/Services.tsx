@@ -15,7 +15,7 @@ const Services = () => {
   const [serviceData, setServiceData] = useState(null); // to store fetched service data
   const navigation = useNavigation();
   const router = useRouter();
-  const { authUser, baseURL} = useContext(AuthContext);
+  const { authUser, baseURL } = useContext(AuthContext);
 
   const servicesList = [
     {
@@ -50,24 +50,32 @@ const Services = () => {
     },
   ];
 
-  const fetchServiceData = async (endpoint ,name) => {
+  const fetchServiceData = async (endpoint, name) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${baseURL}${endpoint}`); 
-      const data = response.data.map((list) => ({
-        _id: list._id, // Assuming the response contains the _id
-        category: list.category, // You can replace it with the actual category from your data
-        businessName: list.businessName, // Assuming the businessName is in the list
-        businessImage: list.businessImage, // Assuming businessImage is in the list
-        address: list.address, // Assuming address is in the list
-        rating: list.rating, // Assuming rating is in the list
-        description: list.description, // Assuming description is in the list
-       
+      const response = await axios.get(`${baseURL}${endpoint}`);
+      const data = response.data.map((item) => ({
+        _id: item._id,
+        businessName: item.businessName,
+        rating: item.rating,
+        category: item.category,
+        reviews: item.reviews || 0,
+        description: item.description, // Only for attorneys
+        availability: item.availability, // Only for attorneys
+        fees: item.fees, // Only for attorneys
+        clients: item.clients, // Only for attorneys
+        years: item.years, // Only for attorneys
+        address: item.address, // Only for headstones
+        priceStartsFrom: item.priceStartsFrom, // Only for headstones
+        businessImage: item.headstoneImage,
+        phoneNumber: item.phoneNumber,
+        businessImages: item.businessImages,
+        headstoneNames: item.headstoneNames,
       }));
-      
-       
-      console.log( "messages :",data);
-      
+
+
+      console.log("messages :", data);
+
       setServiceData(data); // store the fetched data
       setLoading(false);
       router.push({
@@ -86,7 +94,7 @@ const Services = () => {
     return (
       <TouchableOpacity
         style={styles.itemContainer}
-        onPress={() => fetchServiceData(endpoint ,title)}
+        onPress={() => fetchServiceData(endpoint, title)}
       >
         <Image source={icon} style={{ height: 25, width: 25 }} />
         <Text style={styles.itemName}>{title}</Text>
