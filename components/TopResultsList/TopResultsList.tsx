@@ -18,10 +18,12 @@ const TopResultsList = ({ title, items }) => {
         name: item.businessName,
         fees: item.fees,
         years: item.fees,
+        reviews: item.reviews,
         clients: item.clients,
         image: item.businessImage,
         phoneNumber:item.phoneNumber,
-        priceStartsFrom:item.priceStartsFrom,
+        priceStartsFrom:JSON.stringify(item.priceStartsFrom),
+        headstoneImage:JSON.stringify(item.headstoneImage),
         rating: item.rating,
         location: item.address || "",
         desc: item.description || "",
@@ -42,7 +44,7 @@ const TopResultsList = ({ title, items }) => {
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Image source={{
               uri:
-                item.businessImage || item.businessImages[0]
+                item.headstoneImage[0] || item.businessImages[0]
                 
             }} style={styles.itemImage} />
           <View style={styles.rightContainer}>
@@ -55,19 +57,7 @@ const TopResultsList = ({ title, items }) => {
                   </Text>
                 )}
               </View>
-              {(item.availability || item.fees) && (
-                <View style={styles.nameContainer}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-                    <Fontisto name="clock" size={10} color="#333333" />
-                    <Text style={styles.availability}>
-                      {item.availability || "Not Available"} {/* Default value */}
-                    </Text>
-                  </View>
-                  <Text style={styles.designation}>
-                  Starts from:$ {item.fees ? `${item.fees}` : "Starts from "} {/* Default value */}
-                  </Text>
-                </View>
-              )}
+              
 
             </View>
             <View style={styles.rightCornerContainer}>
@@ -93,10 +83,10 @@ const TopResultsList = ({ title, items }) => {
       <View style={styles.topContainer}>
         <Text style={styles.title}>{title}</Text>
         <View style={styles.seeAllBtnContainer}>
-          <TouchableOpacity style={styles.seeAllBtn}>
+          {/* <TouchableOpacity style={styles.seeAllBtn}>
             <Text style={{ color: "#fff" }}>see all</Text>
             <AntDesign name="right" size={12} color="white" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 

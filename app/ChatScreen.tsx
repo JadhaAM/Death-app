@@ -55,7 +55,7 @@ const ChatScreen = () => {
     }, [sender, receiver, baseURL]);
 
     useEffect(() => {
-        const ws = new WebSocket(socketUrl);
+        const ws = new WebSocket("wss://backend-service-dot-the-legacy-app-445407.uc.r.appspot.com/ws");
         setSocket(ws);
 
         ws.onopen = () => {

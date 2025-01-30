@@ -19,9 +19,11 @@ export default function AuthStackLayout() {
       
     }>
       <Stack.Screen name="SignIn"  />
+      <Stack.Screen name="SupperAdminSignIn"  />
       <Stack.Screen name="SignInOption"  options={{ headerShown: false }} />
       <Stack.Screen name="LoginWithPhone" />
       <Stack.Screen name="AdminOptions" options={{ headerShown: false }} />
+      <Stack.Screen name="MainAdminOptions" options={{ headerShown: false }} />
       <Stack.Screen name="ChooseLanguage" />
       <Stack.Screen name="ChoosePlan" />
       <Stack.Screen name="Email" />

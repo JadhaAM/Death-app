@@ -137,6 +137,7 @@ function AppContent() {
         <Stack.Screen name="ViewGallary" options={{ headerShown: false }} />
         <Stack.Screen name="PartnerForm" options={{ headerShown: false }} />
         <Stack.Screen name="EditBussnesses" options={{ headerShown: false }} />
+        <Stack.Screen name="AddBussnesses" options={{ headerShown: false }} />
         <Stack.Screen name="ContactLog" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>

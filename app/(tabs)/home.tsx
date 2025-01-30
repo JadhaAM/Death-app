@@ -50,7 +50,7 @@ const Home = () => {
         years: item.years, // Only for attorneys
         address: item.address, // Only for headstones
         priceStartsFrom: item.priceStartsFrom, // Only for headstones
-        businessImage: item.headstoneImage,
+        headstoneImage: item.headstoneImage,
         phoneNumber: item.phoneNumber,
         businessImages: item.businessImages,
         headstoneNames: item.headstoneNames,

@@ -16,7 +16,7 @@ import axios from 'axios';
 
 
 
-const AdminOptions = () => {
+const MainAdminOptions = () => {
   const router = useRouter();
   const {setAuthUser ,setToken,baseURL}=useContext(AuthContext);
 
@@ -51,17 +51,18 @@ const AdminOptions = () => {
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
+        
         <TouchableOpacity
           style={styles.buttonPrimary}
-          onPress={() => router.push('/AdminChat')} 
+          onPress={() => router.push('/AddBussnesses')} 
         >
-          <Text style={styles.buttonTextPrimary}>Messages</Text>
+          <Text style={styles.buttonTextPrimary}>Add Business</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttonPrimary}
-          onPress={() => router.push('/EditBussnesses')} 
+          onPress={() => router.push('/ContactLog')} 
         >
-          <Text style={styles.buttonTextPrimary}>Edit Business</Text>
+          <Text style={styles.buttonTextPrimary}> recently Add Business</Text>
         </TouchableOpacity>
         <View>
         <TouchableOpacity
@@ -149,4 +150,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AdminOptions;
+export default MainAdminOptions;

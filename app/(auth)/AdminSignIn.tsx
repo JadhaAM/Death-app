@@ -130,9 +130,9 @@ const AdminSignIn = () => {
                             <Text style={styles.errorText}>{errors.password}</Text>
                         )}
 
-                        {/* Remember Me & Forgot Password 
+                        {/* Remember Me & Forgot Password  */}
                         <View style={styles.optionsContainer}>
-                            <View style={styles.rememberMeContainer}>
+                            {/* <View style={styles.rememberMeContainer}>
                                 <Switch
                                     value={isChecked}
                                     onValueChange={toggleSwitch}
@@ -140,11 +140,11 @@ const AdminSignIn = () => {
                                     thumbColor={isChecked ? '#f5dd4b' : '#f4f3f4'}
                                 />
                                 <Text style={styles.rememberText}>Remember me</Text>
-                            </View>
+                            </View> */}
                             <TouchableOpacity onPress={() => router.push("/(auth)/Email")}>
                                 <Text style={styles.forgotText}>Forgot password?</Text>
                             </TouchableOpacity>
-                        </View> */}
+                        </View>
 
                         {/* Log In Button */}
                         <TouchableOpacity style={styles.loginButton} onPress={handleSubmit as unknown as (event: GestureResponderEvent) => void} disabled={isLoading}>
@@ -184,9 +184,9 @@ const AdminSignIn = () => {
             </View>
 
             {/* Login with Phone */}
-            {/* <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/LoginWithPhone')}>
-                <Text style={styles.phoneButtonText}>Login with Phone</Text>
-            </TouchableOpacity> */}
+            <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/SupperAdminSignIn')}>
+                <Text style={styles.phoneButtonText}>Login as SupperAdmin</Text>
+            </TouchableOpacity>
 
             {/* Sign Up */}
             {/* <Text style={styles.footerText}>

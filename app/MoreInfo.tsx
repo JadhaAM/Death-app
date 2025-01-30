@@ -36,14 +36,14 @@ const StatsList = [
   },
   {
     title: "Reviews",
-    value: "96",
+    value: reviews,
     img: reviews,
   },
 ];
 
 const MoreInfo = () => {
-  const { title, name, fees, role, image, rating, location, desc, category, id, phoneNumber, years,
-    clients, priceStartsFrom, businessImages, headstoneNames } = useLocalSearchParams();
+  const { title, name, fees, role, rating, location, desc, category, id, phoneNumber, years,reviews,
+    clients, priceStartsFrom, headstoneImage,businessImages, headstoneNames } = useLocalSearchParams();
   const { authUser, setauthUser, setUserId, userId, setToken, baseURL, setReceiverId } = useContext(AuthContext);
 
   const StatsItem = ({ title, value, img }) => (
@@ -57,13 +57,15 @@ const MoreInfo = () => {
   );
 
   // Dynamically build the `items` array
-  const parsedBusinessImages = businessImages ? JSON.parse(businessImages) : [];
+   const image=businessImages ? JSON.parse(businessImages) : [];
+  const parsedHeadstoneImages = headstoneImage ? JSON.parse(headstoneImage) : [];
   const parsedHeadstoneNames = headstoneNames ? JSON.parse(headstoneNames) : [];
+  const parsedpriceStartsFrom = priceStartsFrom ? JSON.parse(priceStartsFrom) : [];
   const items = parsedHeadstoneNames.map((headstoneName, index) => ({
     _id: index.toString(),
     name: headstoneName,
-    image: parsedBusinessImages[index] || "https://via.placeholder.com/150", // Default image if missing
-    priceRange: priceStartsFrom || "$0.00 - $0.00", // Default price range
+    image: parsedHeadstoneImages[index] || "https://via.placeholder.com/150", // Default image if missing
+    priceRange: parsedpriceStartsFrom[index] || "$0.00 - $0.00", // Default price range
   }));
   const handleCallPress = async () => {
     try {
@@ -142,7 +144,7 @@ const MoreInfo = () => {
             style={styles.productImg}
             source={{
               uri:
-                image || parsedBusinessImages[0]
+              image[0] || parsedHeadstoneImages[0]
                 
             }}
           />
@@ -159,12 +161,12 @@ const MoreInfo = () => {
           <View style={styles.nameCont}>
             <View><Text style={styles.name}>{name}</Text>
               <Text style={styles.Subname}>{role }</Text>
-              <Text style={styles.Subname}>Fees: start from ${fees}</Text>
+              {/* <Text style={styles.Subname}>{fees ? `Fees: start from $ ${fees}` : ``}</Text> */}
             </View>
 
             <View style={styles.ratingCont}>
               <Octicons name="star-fill" size={24} color="#FFD33C" />
-              <Text style={styles.rating}>{rating} (96 reviews)</Text>
+              <Text style={styles.rating}>{rating} </Text>
             </View>
           </View>
           {/* Address */}

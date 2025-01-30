@@ -45,10 +45,17 @@ const EditBusinesses = () => {
     },
     {
       title: "Reviews",
-      value: "96",
+      value: admin?.business?.reviews,
       img: reviews,
     },
-  ];
+  ]; const parsedBusinessImages = admin?.business.headstoneImage ? admin?.business?.headstoneImage : [];
+  const parsedHeadstoneNames = admin?.business.headstoneNames ? admin?.business?.headstoneNames : [];
+  const items = parsedHeadstoneNames.map((headstoneName, index) => ({
+    _id: index.toString(),
+    name: headstoneName,
+    image: parsedBusinessImages[index] || "https://via.placeholder.com/150", // Default image if missing
+    priceRange: admin?.business?.priceStartsFrom[index] || "$0.00 - $0.00", // Default price range
+  }));
   const StatsItem = ({ title, value, img }) => (
     <View style={styles.statsItem}>
       <View style={styles.statsImgCont}>
@@ -57,7 +64,8 @@ const EditBusinesses = () => {
       <Text style={styles.statsValue}>{value}+</Text>
       <Text style={styles.statsTitle}>{title}</Text>
     </View>
-  );
+  ); 
+  
   return (
     <ScrollView style={styles.container}>
       <Header title="Edit Business" />
@@ -91,8 +99,8 @@ const EditBusinesses = () => {
           <Image
             style={styles.productImg}
             source={{
-              uri: admin?.business?.businessImage ||
-                "https://images.unsplash.com/photo-1680821488873-8ecaf386a554?q=80&w=2068&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              uri: admin?.business?.headstoneImage[0] ||
+              admin?.business?.businessImages[0]
             }}
           />
 
@@ -110,13 +118,13 @@ const EditBusinesses = () => {
               {admin?.business?.category === "Attorney" && (
                 <>
                   <Text style={styles.Subname}>Senior Attorney</Text>
-                  <Text style={styles.Subname}>Fees: start from ${admin?.business?.fees}</Text>
                 </>
               )}
+              {/* <Text style={styles.Subname}>{admin?.business?.fees ? `Fees: start from $ ${admin?.business?.fees}` : `Fees: 0`}</Text> */}
             </View>
             <View style={styles.ratingCont}>
               <Octicons name="star-fill" size={24} color="#FFD33C" />
-              <Text style={styles.rating}>{admin?.business?.rating} (96 reviews)</Text>
+              <Text style={styles.rating}>{admin?.business?.rating} </Text>
             </View>
           </View>
           {/* Address */}

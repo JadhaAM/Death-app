@@ -24,18 +24,18 @@ const HeadstonesList = ({ title, items }) => {
       <TouchableOpacity
         style={[
           styles.card,
-          { width: windowWidth / 2 - 20 }, // Responsive two-column layout
+          { width: windowWidth / 2 - 35 }, // Responsive two-column layout
         ]}
         onPress={() => handlePress(item)}
         activeOpacity={0.9}
-      >
+      >``
         <Image source={{ uri: item.image }} style={styles.image} />
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.priceRange}>Single: {item.priceRange}</Text>
-        <Text style={styles.comparison}>Comparison: {item.comparison}</Text>
-        <TouchableOpacity style={styles.quoteButton}>
+        <Text style={styles.priceRange}>start from: ${item.priceRange}</Text>
+        {/* <Text style={styles.comparison}>Comparison: {item.comparison}</Text> */}
+        {/* <TouchableOpacity style={styles.quoteButton}>
           <Text style={styles.quoteButtonText}>REQUEST A QUOTE</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </TouchableOpacity>
     );
   };
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 10,
+    padding: 0,
   },
   title: {
     fontSize: 18,
@@ -73,8 +73,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     marginBottom: 10,
+    gap:10
   },
   card: {
     backgroundColor: "#fff",
@@ -82,6 +83,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 10,
     alignItems: "center",
+    
   },
   image: {
     width: "100%",

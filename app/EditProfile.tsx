@@ -60,7 +60,7 @@ const EditProfile = () => {
   
     try {
       const formData = new FormData();
-   console.log("value of profile image :",values.profileImage);
+  
    
       // Append profile image
       if (values.profileImage) {
@@ -75,8 +75,6 @@ const EditProfile = () => {
       // Append full name
       formData.append("fullName", values.name);
   
-      console.log("FormData contents:", formData);
-  
       const userID = authUser.userId;
   
       // Make the API call
@@ -89,17 +87,16 @@ const EditProfile = () => {
           },
         }
       );
-      console.log("response data",response);
+     
       
       if (response.status === 200) {
-        Alert.alert("Success", "Profile and images updated successfully!");
+        
         router.push("/(tabs)/Profile");
       } else {
-        Alert.alert("Error", "Failed to update profile. Please try again.");
+        
       }
     } catch (error) {
-      console.error("Error updating profile and images:", error);
-      Alert.alert("Error", "An error occurred while updating your profile.");
+      
     } finally {
       setIsLoading(false);
     }

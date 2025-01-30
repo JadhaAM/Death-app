@@ -28,7 +28,7 @@ const Listings = () => {
             />
           </View> */}
 
-          <TopRated title={`Top Rated ${title}`} items={parsedList} />
+          {/* <TopRated title={`Top Rated ${title}`} items={parsedList} /> */}
 
           {/* Top Attorneys */}
           <TopResultsList title={title} items={parsedList} />

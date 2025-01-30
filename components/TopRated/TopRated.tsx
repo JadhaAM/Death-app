@@ -22,20 +22,28 @@ const TopRated = ({ title, items }) => {
             pathname: "/MoreInfo",
             params: {
               title: title,
-              id:item._id,
-              category:item.category,
-              name: item.businessName,
-              image: item.businessImage,
-              rating: item.rating,
-              location: item.address || "",
-              desc: item.description || "",
+        category:item.category,
+        id: item._id,
+        name: item.businessName,
+        fees: item.fees,
+        years: item.fees,
+        clients: item.clients,
+        image: item.businessImage,
+        phoneNumber:item.phoneNumber,
+        priceStartsFrom:JSON.stringify(item.priceStartsFrom),
+        rating: item.rating,
+        location: item.address || "",
+        desc: item.description || "",
+        headstoneImage:JSON.stringify(item.headstoneImage),
+        businessImages: JSON.stringify(item.businessImages), // Pass as JSON string
+        headstoneNames: JSON.stringify(item.headstoneNames),
             },
           });
         }}
       >
         <Image source={{
               uri:
-                item.businessImage || item.businessImages[0]
+                item.headstoneImage[0] || item.businessImages[0]
                 
             }} style={styles.itemImg} contentFit="cover" />
         <Text style={styles.itemTitle}>{item.businessName}</Text>

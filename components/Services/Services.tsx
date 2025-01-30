@@ -58,6 +58,7 @@ const Services = () => {
         _id: item._id,
         businessName: item.businessName,
         rating: item.rating,
+        
         category: item.category,
         reviews: item.reviews || 0,
         description: item.description, // Only for attorneys
@@ -67,7 +68,7 @@ const Services = () => {
         years: item.years, // Only for attorneys
         address: item.address, // Only for headstones
         priceStartsFrom: item.priceStartsFrom, // Only for headstones
-        businessImage: item.headstoneImage,
+        headstoneImage: item.headstoneImage,
         phoneNumber: item.phoneNumber,
         businessImages: item.businessImages,
         headstoneNames: item.headstoneNames,

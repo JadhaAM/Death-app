@@ -17,7 +17,7 @@ import { AuthContext } from "./AuthContext/AuthContext";
 import * as ImagePicker from "expo-image-picker";
 import { Picker } from '@react-native-picker/picker';
 
-const PartnerForm = () => {
+const AddBussnesses = () => {
   const { admin, setAdmin, baseURL } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,42 +38,42 @@ const PartnerForm = () => {
     setHeadstones(updatedHeadstones);
   };
 
-  const pickImage = async (index) => {
-    try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission Denied", "Grant media permissions to upload images.");
-        return;
-      }
+  // const pickImage = async (index) => {
+  //   try {
+  //     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //     if (status !== "granted") {
+  //       Alert.alert("Permission Denied", "Grant media permissions to upload images.");
+  //       return;
+  //     }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+  //     const result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //       allowsEditing: true,
+  //       aspect: [4, 3],
+  //       quality: 1,
+  //     });
 
-      if (!result.canceled) {
-        const uri = result.assets[0].uri;  
-        const fileName = uri.split("/").pop();  
-        const type = `image/${fileName.split(".").pop()}`;  
-        const image = {
-          uri,
-          fileName,
-          type
-        }
-        handleHeadstoneChange(index, "image", image.uri);
-      }
-    } catch (error) {
-      Alert.alert("Error", "Failed to pick image");
-      console.error("Image picking error:", error);
-    }
-  };
+  //     if (!result.canceled) {
+  //       const uri = result.assets[0].uri;  
+  //       const fileName = uri.split("/").pop();  
+  //       const type = `image/${fileName.split(".").pop()}`;  
+  //       const image = {
+  //         uri,
+  //         fileName,
+  //         type
+  //       }
+  //       handleHeadstoneChange(index, "image", image.uri);
+  //     }
+  //   } catch (error) {
+  //     Alert.alert("Error", "Failed to pick image");
+  //     console.error("Image picking error:", error);
+  //   }
+  // };
 
   const handleSubmit = async (values) => {
     setIsLoading(true);
     try {
-      const id = admin.business._id;
+      // const id = admin.business._id;
       const formData = new FormData();
 
       Object.keys(values).forEach((key) => {
@@ -81,35 +81,35 @@ const PartnerForm = () => {
       });
       console.log("values", values);
       
-      if (admin.business.category === "Headstones") {
-        headstones.forEach((headstone, index) => {
-          if (headstone.type !== "select type") {
-            formData.append(`headstoneNames`, headstone.type);
+      // if (admin.business.category === "Headstones") {
+      //   headstones.forEach((headstone, index) => {
+      //     if (headstone.type !== "select type") {
+      //       formData.append(`headstoneNames`, headstone.type);
             
-            if (headstone.fees) {
-              formData.append(`priceStartsFrom`, headstone.fees.toString());
-            }
+      //       if (headstone.fees) {
+      //         formData.append(`priceStartsFrom`, headstone.fees.toString());
+      //       }
             
-            if (headstone.image) {
-              const filename = headstone.image.split('/').pop();
-              const match = /\.(\w+)$/.exec(filename);
-              const type = match ? `image/${match[1]}` : 'image/jpeg';
+      //       if (headstone.image) {
+      //         const filename = headstone.image.split('/').pop();
+      //         const match = /\.(\w+)$/.exec(filename);
+      //         const type = match ? `image/${match[1]}` : 'image/jpeg';
               
-              formData.append(`headstoneImage`, {
-                uri: headstone.image,
-                name: filename,
-                type: type
-              });
-            }
-          }
-        });
-      }
+      //         formData.append(`headstoneImage`, {
+      //           uri: headstone.image,
+      //           name: filename,
+      //           type: type
+      //         });
+      //       }
+      //     }
+      //   });
+      // }
 
       for (let pair of formData._parts) {
         console.log('FormData Entry:', pair[0], pair[1]);
       }
 
-      const response = await axios.put(`${baseURL}/api/businesses/${id}`, formData, {
+      const response = await axios.post(`${baseURL}/api/businesses/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -157,20 +157,40 @@ const PartnerForm = () => {
         {({ handleChange, handleSubmit: formikSubmit, values }) => (
           <>
             <ScrollView style={styles.container}>
-              <Header title="Edit Profile" />
+              <Header title="Add Business" />
 
               {/* Read-only fields */}
               <Text style={styles.label}>Business Name</Text>
-              <Text style={styles.readOnlyField}>{values.businessName}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Business Name"
+                onChangeText={handleChange("businessName")}
+                value={values.businessName}
+              />
 
               <Text style={styles.label}>Email</Text>
-              <Text style={styles.readOnlyField}>{values.email}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Email"
+                onChangeText={handleChange("email")}
+                value={values.email}
+              />
 
               <Text style={styles.label}>Partner Name</Text>
-              <Text style={styles.readOnlyField}>{values.partnerName}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Partner Name"
+                onChangeText={handleChange("partnerName")}
+                value={values.partnerName}
+              />
 
               <Text style={styles.label}>Category</Text>
-              <Text style={styles.readOnlyField}>{values.category}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter category"
+                onChangeText={handleChange("category")}
+                value={values.category}
+              />
 
               {/* Editable fields */}
               <Text style={styles.label}>Address</Text>
@@ -236,58 +256,7 @@ const PartnerForm = () => {
                 value={values.phoneNumber}
               />
 
-              {/* Headstones section */}
-              {admin.business.category === "Headstones" && (
-                <>
-                  <Text style={styles.label2}>Edit Headstones Types</Text>
-                  {headstones.map((item, index) => (
-                    <View key={index} style={styles.headstoneContainer}>
-                      <Text style={styles.label}>Headstone Type {index + 1}</Text>
-                      <View style={styles.pickerContainer}>
-                        <Picker
-                          selectedValue={item.type}
-                          style={styles.picker}
-                          onValueChange={(itemValue) =>
-                            handleHeadstoneChange(index, "type", itemValue)
-                          }
-                        >
-                          {headstoneTypes.map((type, i) => (
-                            <Picker.Item key={i} label={type} value={type} />
-                          ))}
-                        </Picker>
-                      </View>
-
-                      <Text style={styles.label}>Headstone Fees</Text>
-                      <TextInput
-                        style={styles.input}
-                        placeholder="Enter Headstone Fees"
-                        keyboardType="numeric"
-                        value={item.fees}
-                        onChangeText={(text) =>
-                          handleHeadstoneChange(index, "fees", text)
-                        }
-                      />
-
-                      <Text style={styles.label}>Upload Image for Headstone</Text>
-                      <TouchableOpacity
-                        style={styles.uploadButton}
-                        onPress={() => pickImage(index)}
-                      >
-                        <Text style={styles.uploadButtonText}>
-                          {item.image ? 'Change Image' : 'Pick Image'}
-                        </Text>
-                      </TouchableOpacity>
-                      
-                      {item.image && (
-                        <Image 
-                          source={{ uri: item.image }} 
-                          style={styles.imagePreview}
-                        />
-                      )}
-                    </View>
-                  ))}
-                </>
-              )}
+              
             </ScrollView>
 
             <TouchableOpacity
@@ -422,4 +391,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PartnerForm;
+export default AddBussnesses;

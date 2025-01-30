@@ -1,4 +1,3 @@
-import React, { useContext, useState } from 'react';
 import {
     View,
     Text,
@@ -18,72 +17,67 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../AuthContext/AuthContext';
+import { useContext, useState } from 'react';
+import React from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 
-const SignIn = () => {
+const SupperAdminSignIn = () => {
 
     const router = useRouter();
-    const { token, setToken, baseURL ,isVerified ,isSurvyDone,} = useContext(AuthContext);
+    const { token, admin, setAdmin, setToken, baseURL } = useContext(AuthContext);
     const [isChecked, setIsChecked] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const toggleSwitch = () => setIsChecked(previousState => !previousState);
     console.log(baseURL);
 
-    const validationSchema = Yup.object().shape({
-        email: Yup.string().email('Invalid email').required('Email is required'),
-        password: Yup.string()
-            .min(8, 'Password must be at least 8 characters')
-            .required('Password is required'),
-    });
+    // const validationSchema = Yup.object().shape({
+    //     email: Yup.string().email('Invalid email').required('Email is required'),
+    //     password: Yup.string()
+    //         .min(8, 'Password must be at least 8 characters')
+    //         .required('Password is required'),
+    // });
 
 
     const handleSubmit = async (values: { email: any; password: any; }) => {
-        
-       
+
+
         setIsLoading(true);
-        
+
         try {
 
-            const response = await axios.post(`${baseURL}/api/user/login`, {
+            const response = await axios.post(`${baseURL}/api/admin/login`, {
                 email: values.email,
                 password: values.password,
             });
 
             if (response.status === 200) {
-                console.log(response.data.token);
+                console.log("admin data :",response.user);
                 
-                AsyncStorage.setItem('authToken', response.data.token);
-                setToken(response.data.token);
-                
-                if (isVerified){
-                        router.push("/(tabs)/home");
-                  }else{
-                    router.push("/(auth)/VerifyOTP");
-                  } 
+                const adminToken = response.data.token
+                const decodedToken = jwtDecode(adminToken);
+                console.log('Decoded Token:', decodedToken);
+                setAdmin(response.data.user);
+                console.log("admin token :", admin);
+
+                router.push("/(auth)/AdminOptions");
             } else if (response.status === 400) {
                 Alert.alert("Error", response.data.message || "An error occurred.");
-            }  else {
+            } else {
                 Alert.alert("Error", "Failed to log in. Please try again.");
             }
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || error.message || "An error occurred during log in.";
             Alert.alert("Error", errorMessage);
-            
+
         } finally {
             setIsLoading(false);
         }
-    };
 
-    const handleGoogleLogin = async() => {  
-       
-        const googleAuthURL = `${baseURL}/api/user/google`;  
-        Linking.openURL(googleAuthURL).catch(err => {  
-            Alert.alert("Error", "Failed to open Google login.");  
-        });  
-        
+        router.push("/(auth)/MainAdminOptions");
+        setIsLoading(false);
     };
-
 
     return (
         <View style={styles.container}>
@@ -95,7 +89,7 @@ const SignIn = () => {
 
             <Formik
                 initialValues={{ email: '', password: '' }}
-                validationSchema={validationSchema}
+                // validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
@@ -139,7 +133,7 @@ const SignIn = () => {
                             <Text style={styles.errorText}>{errors.password}</Text>
                         )}
 
-                        {/* Remember Me & Forgot Password */}
+                        {/* Remember Me & Forgot Password 
                         <View style={styles.optionsContainer}>
                             <View style={styles.rememberMeContainer}>
                                 <Switch
@@ -153,14 +147,14 @@ const SignIn = () => {
                             <TouchableOpacity onPress={() => router.push("/(auth)/Email")}>
                                 <Text style={styles.forgotText}>Forgot password?</Text>
                             </TouchableOpacity>
-                        </View>
+                        </View> */}
 
                         {/* Log In Button */}
                         <TouchableOpacity style={styles.loginButton} onPress={handleSubmit as unknown as (event: GestureResponderEvent) => void} disabled={isLoading}>
                             {isLoading ? (
                                 <ActivityIndicator size="small" color="#FFFFFF" />
                             ) : (
-                                <Text style={styles.loginButtonText}>Log in</Text>
+                                <Text style={styles.loginButtonText}> SupperAdmin Log in</Text>
                             )}
                         </TouchableOpacity>
                     </>
@@ -168,11 +162,11 @@ const SignIn = () => {
             </Formik>
 
             {/* Or with */}
-            <View style={styles.dividerContainer}>
+            {/* <View style={styles.dividerContainer}>
                 <View style={styles.divider} />
                 <Text style={styles.orText}>Or with</Text>
                 <View style={styles.divider} />
-            </View>
+            </View> */}
 
             {/* Social Login Buttons */}
             <View style={styles.socialContainer}>
@@ -180,26 +174,25 @@ const SignIn = () => {
                     <FontAwesome name="facebook" size={20} color="#4267B2" />
                     <Text style={styles.socialButtonText}>Facebook</Text>
                 </TouchableOpacity> */}
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     style={styles.socialButton}
                     onPress={handleGoogleLogin as unknown as (event: GestureResponderEvent) => void}
                 >
                     <FontAwesome name="google" size={20} color="#DB4437" />
-                    <Text style={styles.socialButtonText}>Google</Text>
-                  
-                </TouchableOpacity>
+                    {isLoading ? (
+                        <ActivityIndicator size="small" color="#ffffff" />
+                    ) : (<Text style={styles.socialButtonText}>Google</Text>
+                    )}
+                </TouchableOpacity> */}
             </View>
 
             {/* Login with Phone */}
-            <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/LoginWithPhone')}>
+            {/* <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/LoginWithPhone')}>
                 <Text style={styles.phoneButtonText}>Login with Phone</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/AdminSignIn')}>
-                <Text style={styles.phoneButtonText}>Login as Partner</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {/* Sign Up */}
-            <Text style={styles.footerText}>
+            {/* <Text style={styles.footerText}>
                 Don’t have an account?{' '}
                 <Text
                     style={styles.signupText}
@@ -207,7 +200,7 @@ const SignIn = () => {
                 >
                     Sign up
                 </Text>
-            </Text>
+            </Text> */}
         </View>
     );
 };
@@ -271,11 +264,11 @@ const styles = StyleSheet.create({
         flex: 1,
         marginHorizontal: 5,
     },
-    socialButtonText: { marginLeft: 10, fontSize: 14, color: '#000' ,alignItems:"center",alignContent:"center"},
+    socialButtonText: { marginLeft: 10, fontSize: 14, color: '#000', alignItems: "center", alignContent: "center" },
     phoneButton: { padding: 12, borderRadius: 8, alignItems: 'center' },
     phoneButtonText: { fontSize: 14, fontWeight: '500', color: '#000' },
     footerText: { textAlign: 'center', fontSize: 14, color: '#7A7A7A' },
     signupText: { color: '#3366FF', fontWeight: 'bold' },
 });
 
-export default SignIn;
+export default SupperAdminSignIn;

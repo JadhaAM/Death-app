@@ -25,7 +25,9 @@ const ContactLog = () => {
     const fetchMessages = async () => {
         try { 
             const userId=authUser.userId;
-            const response = await axios.get(`${baseURL}/api/businesses/contact-status/${userId}/${businessId}`);
+            const response = await axios.get(`${baseURL}/api/businesses/contact-status/${userId}/${businessId}`); 
+            console.log(response);
+            
             const data = response.data.allContacts.map((list) => ({
                 _id: list.contactId,
                 category: list.category,
@@ -47,6 +49,24 @@ const ContactLog = () => {
     useEffect(() => {
         fetchMessages();
     }, []);   
+    const formattedTimestamp = (timestamp:String) => {
+        const date = new Date(timestamp);
+        const today = new Date();
+      
+        // Check if the date is today
+        const isToday =
+          date.getDate() === today.getDate() &&
+          date.getMonth() === today.getMonth() &&
+          date.getFullYear() === today.getFullYear();
+      
+        if (isToday) {
+          // Show time format
+          return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } else {
+          // Show date format
+          return date.toLocaleDateString();
+        }
+      };
 
     const renderMessageItem = ({ item }: { item: Message }) => (  
         <TouchableOpacity>
@@ -57,12 +77,14 @@ const ContactLog = () => {
                 </View>
                 <View style={styles.timeContainer}>
                     <Text style={styles.time}>
-                        {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {formattedTimestamp(item.timestamp)}
                     </Text>
                 </View>
             </View>
         </TouchableOpacity> 
     );  
+    
+      
 
     return (  
         <View style={styles.container}>   

@@ -23,9 +23,21 @@ const ViewGallary = () => {
   // Maximum images limit
   const maxImages = 10;
 
-  // Load existing images from admin data
+  // Load existing images based on category
   useEffect(() => {
-    if (admin?.business?.businessImages?.length) {
+    // if (admin?.business?.category === "Headstones") {
+    //   // Load images for Headstones category
+    //   if (admin?.business?.headstoneImage?.length) {
+    //     const existingImages = admin.business.headstoneImage.map((url, index) => ({
+    //       uri: url,
+    //       type: "image/jpeg", // Assuming default type, adjust as needed
+    //       fileName: `image${index + 1}.jpg`,
+    //     }));
+    //     setImages(existingImages);
+    //   }
+    // } else
+     if (admin?.business?.businessImages?.length) {
+      // Load default business images
       const existingImages = admin.business.businessImages.map((url, index) => ({
         uri: url,
         type: "image/jpeg", // Assuming default type, adjust as needed
@@ -37,6 +49,11 @@ const ViewGallary = () => {
 
   // Function to pick multiple images
   const pickImages = async () => {
+    if (admin?.business?.category === "Headstones") {
+      Alert.alert("Upload Disabled", "You cannot upload images for Headstones.");
+      return;
+    }
+
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -134,6 +151,7 @@ const ViewGallary = () => {
   };
 
   const remainingImages = maxImages - images.length;
+  const isDisabled = admin?.business?.category === "Headstones"; // Disable buttons for Headstones
 
   return (
     <View style={styles.container}>
@@ -141,7 +159,7 @@ const ViewGallary = () => {
       <Text style={styles.title}>
         {images.length >= maxImages
           ? "You have reached the maximum limit of 10 images."
-          : `You can upload ${remainingImages} more ${
+          : `You can upload ${remainingImages} more ${ 
               remainingImages === 1 ? "image" : "images"
             }`}
       </Text>
@@ -165,7 +183,7 @@ const ViewGallary = () => {
       />
 
       {/* Upload Button */}
-      {images.length < maxImages && (
+      {images.length < maxImages && !isDisabled && (
         <TouchableOpacity style={styles.uploadButton} onPress={pickImages}>
           <Text style={styles.uploadButtonText}>Upload Images</Text>
         </TouchableOpacity>
@@ -176,10 +194,10 @@ const ViewGallary = () => {
         style={[
           styles.submitButton,
           isLoading ? styles.disabledButton : null,
-          images.length === 0 ? styles.disabledButton : null,
+          images.length === 0 || isDisabled ? styles.disabledButton : null,
         ]}
         onPress={uploadImages}
-        disabled={isLoading || images.length === 0}
+        disabled={isLoading || images.length === 0 || isDisabled}
       >
         {isLoading ? (
           <ActivityIndicator size="small" color="#ffffff" />
