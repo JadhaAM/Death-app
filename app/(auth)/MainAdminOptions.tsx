@@ -60,9 +60,9 @@ const MainAdminOptions = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buttonPrimary}
-          onPress={() => router.push('/ContactLog')} 
+          onPress={() => router.push('/RecentBusinessLog')} 
         >
-          <Text style={styles.buttonTextPrimary}> recently Add Business</Text>
+          <Text style={styles.buttonTextPrimary}> Recently Added Business</Text>
         </TouchableOpacity>
         <View>
         <TouchableOpacity

@@ -22,6 +22,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import { AuthContext } from "./AuthContext/AuthContext";
 import HeadstonesList from "@/components/TopResultsList/HeadstonesList";
+import Swiper from "react-native-swiper";
 
 const StatsList = [
   {
@@ -139,19 +140,23 @@ const MoreInfo = () => {
       {/* ------------------ Top container ----------------------*/}
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Image */}
-        <View style={styles.imageContainer}>
-        <Image
-            style={styles.productImg}
-            source={{
-              uri:
-              image[0] || parsedHeadstoneImages[0]
-                
-            }}
-          />
-          <TouchableOpacity style={styles.likeBtn}>
-            <Ionicons name="heart-outline" size={22} color="#3E69FE" />
-          </TouchableOpacity>
-        </View>
+        
+        <View style={styles.swiperContainer}>
+                <Swiper
+                  style={styles.wrapper}
+                  showsButtons={false}
+                  showsPagination={true}
+                >
+                  {image.map((img, index) => (
+                    <View key={index} style={styles.slide}>
+                      <Image source={{ uri: img }} style={styles.productImg} />
+                    </View>
+                  ))}
+                </Swiper>
+                  <TouchableOpacity style={styles.likeBtn}>
+                    <Ionicons name="heart-outline" size={22} color="#3E69FE" />
+                  </TouchableOpacity>
+              </View>
 
         {/* -----------------Middle Container ------------------- */}
 
@@ -233,8 +238,19 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 40,
   },
+  swiperContainer: {
+    height: 250,
+    width: "100%",
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  wrapper: {},
   imageContainer: {
     position: "relative",
+  },
+  slide: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   likeBtn: {
     position: "absolute",

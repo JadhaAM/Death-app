@@ -139,6 +139,7 @@ function AppContent() {
         <Stack.Screen name="EditBussnesses" options={{ headerShown: false }} />
         <Stack.Screen name="AddBussnesses" options={{ headerShown: false }} />
         <Stack.Screen name="ContactLog" options={{ headerShown: false }} />
+        <Stack.Screen name="RecentBusinessLog" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

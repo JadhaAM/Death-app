@@ -32,12 +32,12 @@ const SupperAdminSignIn = () => {
     const toggleSwitch = () => setIsChecked(previousState => !previousState);
     console.log(baseURL);
 
-    // const validationSchema = Yup.object().shape({
-    //     email: Yup.string().email('Invalid email').required('Email is required'),
-    //     password: Yup.string()
-    //         .min(8, 'Password must be at least 8 characters')
-    //         .required('Password is required'),
-    // });
+    const validationSchema = Yup.object().shape({
+        email: Yup.string().email('Invalid email').required('Email is required'),
+        password: Yup.string()
+            .min(8, 'Password must be at least 8 characters')
+            .required('Password is required'),
+    });
 
 
     const handleSubmit = async (values: { email: any; password: any; }) => {
@@ -61,7 +61,7 @@ const SupperAdminSignIn = () => {
                 setAdmin(response.data.user);
                 console.log("admin token :", admin);
 
-                router.push("/(auth)/AdminOptions");
+                router.push("/(auth)/MainAdminOptions");
             } else if (response.status === 400) {
                 Alert.alert("Error", response.data.message || "An error occurred.");
             } else {
@@ -75,8 +75,8 @@ const SupperAdminSignIn = () => {
             setIsLoading(false);
         }
 
-        router.push("/(auth)/MainAdminOptions");
-        setIsLoading(false);
+        
+       
     };
 
     return (
@@ -89,7 +89,7 @@ const SupperAdminSignIn = () => {
 
             <Formik
                 initialValues={{ email: '', password: '' }}
-                // validationSchema={validationSchema}
+                validationSchema={validationSchema}
                 onSubmit={handleSubmit}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
@@ -154,7 +154,7 @@ const SupperAdminSignIn = () => {
                             {isLoading ? (
                                 <ActivityIndicator size="small" color="#FFFFFF" />
                             ) : (
-                                <Text style={styles.loginButtonText}> SupperAdmin Log in</Text>
+                                <Text style={styles.loginButtonText}> Super Admin Log in</Text>
                             )}
                         </TouchableOpacity>
                     </>

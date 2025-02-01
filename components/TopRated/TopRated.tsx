@@ -10,7 +10,14 @@ const TopRated = ({ title, items }) => {
   const [topRatedList, setTopRatedList] = useState([]);
 
   useEffect(() => {
-    setTopRatedList(items);
+   
+    if (items?.length > 0) {
+      const sortedItems = [...items]
+        .sort((a, b) => b.rating - a.rating || items.indexOf(a) - items.indexOf(b))
+        .slice(0, 3); 
+
+      setTopRatedList(sortedItems);
+    }
   }, [items]);
 
   const TopRatedItem = ({ item }) => {
@@ -22,30 +29,32 @@ const TopRated = ({ title, items }) => {
             pathname: "/MoreInfo",
             params: {
               title: title,
-        category:item.category,
-        id: item._id,
-        name: item.businessName,
-        fees: item.fees,
-        years: item.fees,
-        clients: item.clients,
-        image: item.businessImage,
-        phoneNumber:item.phoneNumber,
-        priceStartsFrom:JSON.stringify(item.priceStartsFrom),
-        rating: item.rating,
-        location: item.address || "",
-        desc: item.description || "",
-        headstoneImage:JSON.stringify(item.headstoneImage),
-        businessImages: JSON.stringify(item.businessImages), // Pass as JSON string
-        headstoneNames: JSON.stringify(item.headstoneNames),
+              category: item.category,
+              id: item._id,
+              name: item.businessName,
+              fees: item.fees,
+              years: item.fees,
+              clients: item.clients,
+              image: item.businessImage,
+              phoneNumber: item.phoneNumber,
+              priceStartsFrom: JSON.stringify(item.priceStartsFrom),
+              rating: item.rating,
+              location: item.address || "",
+              desc: item.description || "",
+              headstoneImage: JSON.stringify(item.headstoneImage),
+              businessImages: JSON.stringify(item.businessImages), // Pass as JSON string
+              headstoneNames: JSON.stringify(item.headstoneNames),
             },
           });
         }}
       >
-        <Image source={{
-              uri:
-                item.headstoneImage[0] || item.businessImages[0]
-                
-            }} style={styles.itemImg} contentFit="cover" />
+        <Image 
+          source={{
+            uri: item.headstoneImage[0] || item.businessImages[0],
+          }} 
+          style={styles.itemImg} 
+          contentFit="cover" 
+        />
         <Text style={styles.itemTitle}>{item.businessName}</Text>
         <Text style={styles.itemSubtitle}>{item.open}</Text>
         <View style={styles.ratingsContainer}>
@@ -60,10 +69,9 @@ const TopRated = ({ title, items }) => {
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.topRatedList}>
-        {topRatedList?.length > 0 &&
-          topRatedList?.map((item, index) => (
-            <TopRatedItem key={index} item={item} />
-          ))}
+        {topRatedList.map((item, index) => (
+          <TopRatedItem key={index} item={item} />
+        ))}
       </View>
     </View>
   );

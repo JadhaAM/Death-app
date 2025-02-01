@@ -49,10 +49,10 @@ const ViewGallary = () => {
 
   // Function to pick multiple images
   const pickImages = async () => {
-    if (admin?.business?.category === "Headstones") {
-      Alert.alert("Upload Disabled", "You cannot upload images for Headstones.");
-      return;
-    }
+    // if (admin?.business?.category === "Headstones") {
+    //   Alert.alert("Upload Disabled", "You cannot upload images for Headstones.");
+    //   return;
+    // }
 
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -151,7 +151,7 @@ const ViewGallary = () => {
   };
 
   const remainingImages = maxImages - images.length;
-  const isDisabled = admin?.business?.category === "Headstones"; // Disable buttons for Headstones
+  // const isDisabled = admin?.business?.category === "Headstones"; // Disable buttons for Headstones
 
   return (
     <View style={styles.container}>
@@ -182,8 +182,8 @@ const ViewGallary = () => {
         )}
       />
 
-      {/* Upload Button */}
-      {images.length < maxImages && !isDisabled && (
+      {/* Upload Button  !isDisabled &&*/}
+      {images.length < maxImages &&  (
         <TouchableOpacity style={styles.uploadButton} onPress={pickImages}>
           <Text style={styles.uploadButtonText}>Upload Images</Text>
         </TouchableOpacity>
@@ -194,10 +194,10 @@ const ViewGallary = () => {
         style={[
           styles.submitButton,
           isLoading ? styles.disabledButton : null,
-          images.length === 0 || isDisabled ? styles.disabledButton : null,
+          // images.length === 0 || isDisabled ? styles.disabledButton : null,
         ]}
         onPress={uploadImages}
-        disabled={isLoading || images.length === 0 || isDisabled}
+        disabled={isLoading || images.length === 0 }
       >
         {isLoading ? (
           <ActivityIndicator size="small" color="#ffffff" />

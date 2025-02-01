@@ -141,7 +141,7 @@ const AdminSignIn = () => {
                                 />
                                 <Text style={styles.rememberText}>Remember me</Text>
                             </View> */}
-                            <TouchableOpacity onPress={() => router.push("/(auth)/Email")}>
+                            <TouchableOpacity onPress={() => router.push("/(auth)/EmailSecound")}>
                                 <Text style={styles.forgotText}>Forgot password?</Text>
                             </TouchableOpacity>
                         </View>
@@ -151,7 +151,7 @@ const AdminSignIn = () => {
                             {isLoading ? (
                                 <ActivityIndicator size="small" color="#FFFFFF" />
                             ) : (
-                                <Text style={styles.loginButtonText}>Admin Log in</Text>
+                                <Text style={styles.loginButtonText}>Partner Log in</Text>
                             )}
                         </TouchableOpacity>
                     </>
@@ -185,7 +185,7 @@ const AdminSignIn = () => {
 
             {/* Login with Phone */}
             <TouchableOpacity style={styles.phoneButton} onPress={() => router.push('/(auth)/SupperAdminSignIn')}>
-                <Text style={styles.phoneButtonText}>Login as SupperAdmin</Text>
+                <Text style={styles.phoneButtonText}>Login as Super Admin</Text>
             </TouchableOpacity>
 
             {/* Sign Up */}

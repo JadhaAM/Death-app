@@ -19,6 +19,7 @@ const AuthProvider = ({ children }) => {
   const [isSurvyDone, setSurvyDone] = useState(false);
   const [receiverId,setReceiverId] =useState('');
   const [admin ,setAdmin]=useState('')
+  const [business ,setBusiness]=useState('')
      
  useEffect(() => {
   const fetchUser  = async () => {
@@ -79,6 +80,8 @@ const AuthProvider = ({ children }) => {
         setAuthUser,
         admin ,
         setAdmin ,
+        business,
+        setBusiness,
         isVerified,
         setVerified,
         isSurvyDone, 

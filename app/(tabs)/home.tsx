@@ -7,6 +7,7 @@ import TopResultsList from "@/components/TopResultsList/TopResultsList";
 import axios from "axios";
 import { AuthContext } from "../AuthContext/AuthContext";
 import { router } from "expo-router";
+import TopRated from "@/components/TopRated/TopRated";
 
 interface BusinessItem {
   _id: string;
@@ -77,7 +78,7 @@ const Home = () => {
           <Services />
 
           {/* Top Attorneys */}
-          <TopResultsList
+          <TopRated
             title="Top Attorneys"
             items={attorneys}
           />
@@ -92,7 +93,7 @@ const Home = () => {
           </View>
 
           {/* Top Headstones */}
-          <TopResultsList
+          <TopRated
             title="Top Headstones"
             items={headstones}
           />

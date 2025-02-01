@@ -15,12 +15,13 @@ import {
 
 import { router } from "expo-router";
 import Header from "@/components/Header";
-import { Octicons } from "@expo/vector-icons";
+import { Ionicons, Octicons } from "@expo/vector-icons";
 import reviews from "../assets/icons/reviews.png";
 import years from "../assets/icons/years.png";
 import clients from "../assets/icons/clients.png";
 import HeadstonesList from "@/components/TopResultsList/HeadstonesList";
 import { useFocusEffect } from "@react-navigation/native";
+import Swiper from "react-native-swiper";
 
 
 const EditBusinesses = () => {
@@ -48,7 +49,7 @@ const EditBusinesses = () => {
       value: admin?.business?.reviews,
       img: reviews,
     },
-  ]; const parsedBusinessImages = admin?.business.headstoneImage ? admin?.business?.headstoneImage : [];
+  ]; const parsedBusinessImages = admin?.business.businessImages ? admin?.business?.businessImages : [];
   const parsedHeadstoneNames = admin?.business.headstoneNames ? admin?.business?.headstoneNames : [];
   const items = parsedHeadstoneNames.map((headstoneName, index) => ({
     _id: index.toString(),
@@ -72,12 +73,7 @@ const EditBusinesses = () => {
 
       {/* Profile Image Section */}
       <View style={styles.imageContainer}>
-        {/* <Image
-          style={styles.image}
-          source={{
-            uri: admin?.business?.businessImage || "https://via.placeholder.com/150",
-          }}
-        /> */}
+        
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.editButton]}
@@ -95,16 +91,20 @@ const EditBusinesses = () => {
       </View>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Image */}
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.productImg}
-            source={{
-              uri: admin?.business?.headstoneImage[0] ||
-              admin?.business?.businessImages[0]
-            }}
-          />
-
-        </View>
+        <View style={styles.swiperContainer}>
+        <Swiper
+          style={styles.wrapper}
+          showsButtons={false}
+          showsPagination={true}
+        >
+          {parsedBusinessImages.map((img, index) => (
+            <View key={index} style={styles.slide}>
+              <Image source={{ uri: img }} style={styles.productImg} />
+            </View>
+          ))}
+        </Swiper>
+         
+      </View>
 
         {/* -----------------Middle Container ------------------- */}
 
@@ -177,8 +177,19 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 40,
   },
+  swiperContainer: {
+    height: 250,
+    width: "100%",
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  wrapper: {},
   imageContainer: {
     position: "relative",
+  },
+  slide: {
+    justifyContent: "center",
+    alignItems: "center",
   },
   likeBtn: {
     position: "absolute",
