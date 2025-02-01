@@ -239,12 +239,14 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   swiperContainer: {
-    height: 250,
+    height: 270,
     width: "100%",
     borderRadius: 20,
     overflow: "hidden",
   },
-  wrapper: {},
+  wrapper: {
+    paddingBottom: 40,
+  },
   imageContainer: {
     position: "relative",
   },
