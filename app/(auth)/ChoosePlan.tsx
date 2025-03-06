@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 const plans = [
   { id: "1", name: "Monthly", price: "$29.99 / mo" },
@@ -16,7 +11,6 @@ const ChoosePlan = () => {
   const [selectedPlan, setSelectedPlan] = useState("Monthly");
 
   const handleContinue = () => {
-    
     alert(`Selected Plan: ${selectedPlan}`);
   };
 

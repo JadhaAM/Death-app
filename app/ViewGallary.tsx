@@ -36,13 +36,15 @@ const ViewGallary = () => {
     //     setImages(existingImages);
     //   }
     // } else
-     if (admin?.business?.businessImages?.length) {
+    if (admin?.business?.businessImages?.length) {
       // Load default business images
-      const existingImages = admin.business.businessImages.map((url, index) => ({
-        uri: url,
-        type: "image/jpeg", // Assuming default type, adjust as needed
-        fileName: `image${index + 1}.jpg`,
-      }));
+      const existingImages = admin.business.businessImages.map(
+        (url, index) => ({
+          uri: url,
+          type: "image/jpeg", // Assuming default type, adjust as needed
+          fileName: `image${index + 1}.jpg`,
+        }),
+      );
       setImages(existingImages);
     }
   }, [admin]);
@@ -55,9 +57,13 @@ const ViewGallary = () => {
     // }
 
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission Denied", "Grant media permissions to upload images.");
+        Alert.alert(
+          "Permission Denied",
+          "Grant media permissions to upload images.",
+        );
         return;
       }
 
@@ -80,7 +86,7 @@ const ViewGallary = () => {
         } else {
           Alert.alert(
             "Limit Reached",
-            `You can upload a maximum of ${availableSlots} more images.`
+            `You can upload a maximum of ${availableSlots} more images.`,
           );
           setImages((prevImages) => [
             ...prevImages,
@@ -121,11 +127,15 @@ const ViewGallary = () => {
 
       // Backend API call
       const id = admin.business._id;
-      const response = await axios.put(`${baseURL}/api/businesses/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
+      const response = await axios.put(
+        `${baseURL}/api/businesses/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
       if (response.status === 200) {
         console.log("Response from backend:", response.data);
@@ -159,7 +169,7 @@ const ViewGallary = () => {
       <Text style={styles.title}>
         {images.length >= maxImages
           ? "You have reached the maximum limit of 10 images."
-          : `You can upload ${remainingImages} more ${ 
+          : `You can upload ${remainingImages} more ${
               remainingImages === 1 ? "image" : "images"
             }`}
       </Text>
@@ -183,7 +193,7 @@ const ViewGallary = () => {
       />
 
       {/* Upload Button  !isDisabled &&*/}
-      {images.length < maxImages &&  (
+      {images.length < maxImages && (
         <TouchableOpacity style={styles.uploadButton} onPress={pickImages}>
           <Text style={styles.uploadButtonText}>Upload Images</Text>
         </TouchableOpacity>
@@ -197,7 +207,7 @@ const ViewGallary = () => {
           // images.length === 0 || isDisabled ? styles.disabledButton : null,
         ]}
         onPress={uploadImages}
-        disabled={isLoading || images.length === 0 }
+        disabled={isLoading || images.length === 0}
       >
         {isLoading ? (
           <ActivityIndicator size="small" color="#ffffff" />

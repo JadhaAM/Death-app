@@ -23,7 +23,6 @@ import HeadstonesList from "@/components/TopResultsList/HeadstonesList";
 import { useFocusEffect } from "@react-navigation/native";
 import Swiper from "react-native-swiper";
 
-
 const EditBusinesses = () => {
   const { admin, baseURL } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +30,7 @@ const EditBusinesses = () => {
   useFocusEffect(
     React.useCallback(() => {
       console.log("Admin state on focus:", admin);
-    }, [admin])
+    }, [admin]),
   );
   const StatsList = [
     {
@@ -49,8 +48,13 @@ const EditBusinesses = () => {
       value: admin?.business?.reviews,
       img: reviews,
     },
-  ]; const parsedBusinessImages = admin?.business.businessImages ? admin?.business?.businessImages : [];
-  const parsedHeadstoneNames = admin?.business.headstoneNames ? admin?.business?.headstoneNames : [];
+  ];
+  const parsedBusinessImages = admin?.business.businessImages
+    ? admin?.business?.businessImages
+    : [];
+  const parsedHeadstoneNames = admin?.business.headstoneNames
+    ? admin?.business?.headstoneNames
+    : [];
   const items = parsedHeadstoneNames.map((headstoneName, index) => ({
     _id: index.toString(),
     name: headstoneName,
@@ -65,15 +69,14 @@ const EditBusinesses = () => {
       <Text style={styles.statsValue}>{value}+</Text>
       <Text style={styles.statsTitle}>{title}</Text>
     </View>
-  ); 
-  
+  );
+
   return (
     <ScrollView style={styles.container}>
       <Header title="Edit Business" />
 
       {/* Profile Image Section */}
       <View style={styles.imageContainer}>
-        
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={[styles.editButton]}
@@ -92,19 +95,18 @@ const EditBusinesses = () => {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Image */}
         <View style={styles.swiperContainer}>
-        <Swiper
-          style={styles.wrapper}
-          showsButtons={false}
-          showsPagination={true}
-        >
-          {parsedBusinessImages.map((img, index) => (
-            <View key={index} style={styles.slide}>
-              <Image source={{ uri: img }} style={styles.productImg} />
-            </View>
-          ))}
-        </Swiper>
-         
-      </View>
+          <Swiper
+            style={styles.wrapper}
+            showsButtons={false}
+            showsPagination={true}
+          >
+            {parsedBusinessImages.map((img, index) => (
+              <View key={index} style={styles.slide}>
+                <Image source={{ uri: img }} style={styles.productImg} />
+              </View>
+            ))}
+          </Swiper>
+        </View>
 
         {/* -----------------Middle Container ------------------- */}
 
@@ -113,7 +115,6 @@ const EditBusinesses = () => {
           {/* Name and rating */}
           <View style={styles.nameCont}>
             <View>
-
               <Text style={styles.name}>{admin?.business?.businessName}</Text>
               {admin?.business?.category === "Attorney" && (
                 <>
@@ -148,21 +149,16 @@ const EditBusinesses = () => {
           <Text style={styles.infoTitle}>About this cemetery</Text>
           <Text style={styles.infoValue}>
             {admin?.business?.description ||
-              "Gutterman’s is a family owned and operated funeral home that has been serving the Jewish community of New York City since 1892. With over 100 years of experience directing Jewish funerals, Gutterman’s is one of the largest family owned and operated firms of its kind in the nation."
-            }
+              "Gutterman’s is a family owned and operated funeral home that has been serving the Jewish community of New York City since 1892. With over 100 years of experience directing Jewish funerals, Gutterman’s is one of the largest family owned and operated firms of its kind in the nation."}
           </Text>
         </View>
         {admin?.business?.category === "Headstones" && items.length > 0 && (
           <HeadstonesList title="Headstones available" items={items} />
         )}
-
-
       </ScrollView>
     </ScrollView>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -170,7 +166,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     paddingHorizontal: 16,
     paddingTop: 16,
-    marginTop:40,
+    marginTop: 40,
   },
   productImg: {
     height: 220,

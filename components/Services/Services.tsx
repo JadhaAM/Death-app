@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import React, { useContext, useState } from "react";
 import { Image } from "expo-image";
 import axios from "axios";
@@ -58,7 +64,7 @@ const Services = () => {
         _id: item._id,
         businessName: item.businessName,
         rating: item.rating,
-        
+
         category: item.category,
         reviews: item.reviews || 0,
         description: item.description, // Only for attorneys
@@ -73,7 +79,6 @@ const Services = () => {
         businessImages: item.businessImages,
         headstoneNames: item.headstoneNames,
       }));
-
 
       console.log("messages :", data);
 

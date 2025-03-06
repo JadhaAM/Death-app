@@ -11,10 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "LSApplicationQueriesSchemes": [
-          "whatsapp",
-          "tel"
-        ],
+        "LSApplicationQueriesSchemes": ["whatsapp", "tel"],
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
         }
@@ -26,11 +23,7 @@
         "foregroundImage": "./assets/images/file.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": [
-        "CALL_PHONE",
-        "READ_PHONE_STATE",
-        "SEND_SMS"
-      ],
+      "permissions": ["CALL_PHONE", "READ_PHONE_STATE", "SEND_SMS"],
       "intentFilters": [
         {
           "action": "VIEW",
@@ -43,10 +36,7 @@
               "scheme": "whatsapp"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ],
       "package": "com.apollonox.thelegacyapp",

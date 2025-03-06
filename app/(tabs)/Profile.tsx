@@ -1,54 +1,60 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, Linking ,Modal} from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Linking,
+  Modal,
+} from "react-native";
 import { useRouter } from "expo-router";
-import { FontAwesome, MaterialIcons, Ionicons, AntDesign } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  MaterialIcons,
+  Ionicons,
+  AntDesign,
+} from "@expo/vector-icons";
 import axios from "axios";
 import { AuthContext } from "../AuthContext/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
   const router = useRouter();
-  const { authUser, setauthUser,setUserId ,userId, setToken , baseURL} = useContext(AuthContext);
+  const { authUser, setauthUser, setUserId, userId, setToken, baseURL } =
+    useContext(AuthContext);
   const [isModalVisible, setModalVisible] = useState(false);
 
   const fetchUserData = async () => {
-
     try {
       const response = await axios.post(`${baseURL}/api/user/profile`, {
         userID: authUser.userId,
       });
 
-
       setUserId(response.data.user);
-    } catch (error) { 
-    }
+    } catch (error) {}
   };
   const clearAuthToken = async () => {
     try {
-      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem("authToken");
       setToken(null);
     } catch (error) {
-      console.log('Error', error);
+      console.log("Error", error);
     }
   };
 
   const handleSignOut = async () => {
     try {
       await axios.get(`${baseURL}/api/user/logout`);
-     
-      
-      router.push("/(auth)/SignIn");
-    } catch (error) {
-    
 
-    }
-    
-    
+      router.push("/(auth)/SignIn");
+    } catch (error) {}
   };
   const handelopenWhatsApp = () => {
-    const phoneNumber=+19376088018
+    const phoneNumber = +19376088018;
     const whatsappURL = `https://wa.me/${phoneNumber}`;
-  
+
     Linking.canOpenURL(whatsappURL)
       .then((supported) => {
         if (supported) {
@@ -56,7 +62,7 @@ const Profile = () => {
         } else {
           Alert.alert(
             "Error",
-            "Unable to open WhatsApp. Please ensure the app is installed on your device."
+            "Unable to open WhatsApp. Please ensure the app is installed on your device.",
           );
         }
       })
@@ -65,14 +71,14 @@ const Profile = () => {
   const handleTermsAndConditions = () => {
     const termsURL = `https://drive.google.com/file/d/1TgylF2iXPhb0EyojtOG3zI8FFaK3h2ZN/view?usp=sharing`;
     Linking.openURL(termsURL).catch((err) =>
-      Alert.alert("Error", "Failed to open Terms and Conditions.")
+      Alert.alert("Error", "Failed to open Terms and Conditions."),
     );
   };
 
   const handlePrivacyPolicy = () => {
     const policyURL = `https://drive.google.com/file/d/165j4uxjdjjZKsKtVJ97fQiMv4jnHsjt9/view?usp=sharing`;
     Linking.openURL(policyURL).catch((err) =>
-      Alert.alert("Error", "Failed to open Privacy Policy.")
+      Alert.alert("Error", "Failed to open Privacy Policy."),
     );
   };
 
@@ -84,16 +90,19 @@ const Profile = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
-  
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Image source={{
-          
-          
-          uri: userId.profileImage ? userId.profileImage : "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        }} style={styles.avatar} />
+        <Image
+          source={{
+            uri: userId.profileImage
+              ? userId.profileImage
+              : "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          }}
+          style={styles.avatar}
+        />
         <View>
           <Text style={styles.userName}>Hi, {userId.fullName}</Text>
           {/* <Text style={styles.userAge}>{ } Year old</Text> */}
@@ -101,23 +110,28 @@ const Profile = () => {
       </View>
 
       {/* Menu Items */}
-      <TouchableOpacity style={styles.menuItem}  onPress={()=>router.push("/EditProfile")} >
+      <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => router.push("/EditProfile")}
+      >
         <FontAwesome name="edit" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Edit Profile</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuItem} onPress={()=>router.push("/ContactLog")}>
+      <TouchableOpacity
+        style={styles.menuItem}
+        onPress={() => router.push("/ContactLog")}
+      >
         <Ionicons name="business-outline" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Contacted Business</Text>
       </TouchableOpacity>
-
 
       <TouchableOpacity style={styles.menuItem} onPress={handleLegal}>
         <Ionicons name="document-text-outline" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Legal</Text>
       </TouchableOpacity>
-       {/* Modal for Legal Options */}
-       <Modal
+      {/* Modal for Legal Options */}
+      <Modal
         visible={isModalVisible}
         transparent={true}
         animationType="fade"
@@ -147,7 +161,7 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
-      <TouchableOpacity style={styles.menuItem} onPress={handelopenWhatsApp} >
+      <TouchableOpacity style={styles.menuItem} onPress={handelopenWhatsApp}>
         <Ionicons name="logo-whatsapp" size={24} color="#4A4A4A" />
         <Text style={styles.menuText}>Contact Us</Text>
       </TouchableOpacity>
@@ -177,7 +191,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     marginRight: 15,
-    resizeMode:"cover",
+    resizeMode: "cover",
   },
   userName: {
     fontSize: 18,

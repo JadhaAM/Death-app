@@ -15,126 +15,131 @@ import { router } from "expo-router";
 import Header from "@/components/Header";
 import { AuthContext } from "./AuthContext/AuthContext";
 import * as ImagePicker from "expo-image-picker";
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from "@react-native-picker/picker";
 
 const RecentBusinessLog = () => {
   const { business, setBusiness, baseURL } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const [headstones, setHeadstones] = useState(
-    Array(5).fill({ type: "select type", fees: "", image: null })
+    Array(5).fill({ type: "select type", fees: "", image: null }),
   );
 
   const headstoneTypes = [
-    "select type", "FLAT GRAVE", "BEVEL", "SLANTED", "UPRIGHT", "SPECIALTY"
+    "select type",
+    "FLAT GRAVE",
+    "BEVEL",
+    "SLANTED",
+    "UPRIGHT",
+    "SPECIALTY",
   ];
 
   const handleHeadstoneChange = (index, field, value) => {
     const updatedHeadstones = [...headstones];
     updatedHeadstones[index] = {
       ...updatedHeadstones[index],
-      [field]: value
+      [field]: value,
     };
     setHeadstones(updatedHeadstones);
   };
 
-//   const pickImage = async (index) => {
-//     try {
-//       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-//       if (status !== "granted") {
-//         Alert.alert("Permission Denied", "Grant media permissions to upload images.");
-//         return;
-//       }
+  //   const pickImage = async (index) => {
+  //     try {
+  //       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //       if (status !== "granted") {
+  //         Alert.alert("Permission Denied", "Grant media permissions to upload images.");
+  //         return;
+  //       }
 
-//       const result = await ImagePicker.launchImageLibraryAsync({
-//         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-//         allowsEditing: true,
-//         aspect: [4, 3],
-//         quality: 1,
-//       });
+  //       const result = await ImagePicker.launchImageLibraryAsync({
+  //         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //         allowsEditing: true,
+  //         aspect: [4, 3],
+  //         quality: 1,
+  //       });
 
-//       if (!result.canceled) {
-//         const uri = result.assets[0].uri;  
-//         const fileName = uri.split("/").pop();  
-//         const type = `image/${fileName.split(".").pop()}`;  
-//         const image = {
-//           uri,
-//           fileName,
-//           type
-//         }
-//         handleHeadstoneChange(index, "image", image.uri);
-//       }
-//     } catch (error) {
-//       Alert.alert("Error", "Failed to pick image");
-//       console.error("Image picking error:", error);
-//     }
-//   };
+  //       if (!result.canceled) {
+  //         const uri = result.assets[0].uri;
+  //         const fileName = uri.split("/").pop();
+  //         const type = `image/${fileName.split(".").pop()}`;
+  //         const image = {
+  //           uri,
+  //           fileName,
+  //           type
+  //         }
+  //         handleHeadstoneChange(index, "image", image.uri);
+  //       }
+  //     } catch (error) {
+  //       Alert.alert("Error", "Failed to pick image");
+  //       console.error("Image picking error:", error);
+  //     }
+  //   };
 
-//   const handleSubmit = async (values) => {
-//     setIsLoading(true);
-//     try {
-//       const id = admin.business._id;
-//       const formData = new FormData();
+  //   const handleSubmit = async (values) => {
+  //     setIsLoading(true);
+  //     try {
+  //       const id = admin.business._id;
+  //       const formData = new FormData();
 
-//       Object.keys(values).forEach((key) => {
-//         formData.append(key, values[key]);
-//       });
-//       console.log("values", values);
-      
-//       if (admin.business.category === "Headstones") {
-//         headstones.forEach((headstone, index) => {
-//           if (headstone.type !== "select type") {
-//             formData.append(`headstoneNames`, headstone.type);
-            
-//             if (headstone.fees) {
-//               formData.append(`priceStartsFrom`, headstone.fees.toString());
-//             }
-            
-//             if (headstone.image) {
-//               const filename = headstone.image.split('/').pop();
-//               const match = /\.(\w+)$/.exec(filename);
-//               const type = match ? `image/${match[1]}` : 'image/jpeg';
-              
-//               formData.append(`headstoneImage`, {
-//                 uri: headstone.image,
-//                 name: filename,
-//                 type: type
-//               });
-//             }
-//           }
-//         });
-//       }
+  //       Object.keys(values).forEach((key) => {
+  //         formData.append(key, values[key]);
+  //       });
+  //       console.log("values", values);
 
-//       for (let pair of formData._parts) {
-//         console.log('FormData Entry:', pair[0], pair[1]);
-//       }
+  //       if (admin.business.category === "Headstones") {
+  //         headstones.forEach((headstone, index) => {
+  //           if (headstone.type !== "select type") {
+  //             formData.append(`headstoneNames`, headstone.type);
 
-//       const response = await axios.put(`${baseURL}/api/businesses/${id}`, formData, {
-//         headers: {
-//           'Content-Type': 'multipart/form-data',
-//         },
-//       });
+  //             if (headstone.fees) {
+  //               formData.append(`priceStartsFrom`, headstone.fees.toString());
+  //             }
 
-//       setAdmin(prevAdmin => ({
-//         ...prevAdmin,
-//         business: {
-//           ...prevAdmin.business,
-//           ...response.data,
-//         },
-//       }));
+  //             if (headstone.image) {
+  //               const filename = headstone.image.split('/').pop();
+  //               const match = /\.(\w+)$/.exec(filename);
+  //               const type = match ? `image/${match[1]}` : 'image/jpeg';
 
-//       Alert.alert("Success", "Profile updated successfully");
-//       router.push("/EditBussnesses");
-//     } catch (error) {
-//       console.error("Error submitting form:", error.response?.data || error.message);
-//       Alert.alert(
-//         "Error",
-//         "Failed to update profile. Please check your inputs and try again."
-//       );
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
+  //               formData.append(`headstoneImage`, {
+  //                 uri: headstone.image,
+  //                 name: filename,
+  //                 type: type
+  //               });
+  //             }
+  //           }
+  //         });
+  //       }
+
+  //       for (let pair of formData._parts) {
+  //         console.log('FormData Entry:', pair[0], pair[1]);
+  //       }
+
+  //       const response = await axios.put(`${baseURL}/api/businesses/${id}`, formData, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       });
+
+  //       setAdmin(prevAdmin => ({
+  //         ...prevAdmin,
+  //         business: {
+  //           ...prevAdmin.business,
+  //           ...response.data,
+  //         },
+  //       }));
+
+  //       Alert.alert("Success", "Profile updated successfully");
+  //       router.push("/EditBussnesses");
+  //     } catch (error) {
+  //       console.error("Error submitting form:", error.response?.data || error.message);
+  //       Alert.alert(
+  //         "Error",
+  //         "Failed to update profile. Please check your inputs and try again."
+  //       );
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
   return (
     <View style={styles.mainContainer}>
@@ -153,7 +158,6 @@ const RecentBusinessLog = () => {
           reviews: business?.business?.reviews?.toString() || "",
           fees: business?.business?.fees?.toString() || "",
         }}
-        
       >
         {({ handleChange, handleSubmit: formikSubmit, values }) => (
           <>
@@ -164,11 +168,9 @@ const RecentBusinessLog = () => {
               <Text style={styles.label}>Business Name</Text>
               <Text style={styles.readOnlyField}>{values.businessName}</Text>
 
-             
               <Text style={styles.label}>Category</Text>
               <Text style={styles.readOnlyField}>{values.category}</Text>
 
-              
               <Text style={styles.label}>Address</Text>
               <Text style={styles.readOnlyField}>{values.address}</Text>
 
@@ -358,7 +360,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     resizeMode: "cover",
   },
-  
+
   submitButtonDisabled: {
     backgroundColor: "#A5C3F7",
   },

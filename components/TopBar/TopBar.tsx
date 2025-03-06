@@ -7,47 +7,39 @@ import { AuthContext } from "@/app/AuthContext/AuthContext";
 import axios from "axios";
 import { router } from "expo-router";
 
-
 const TopBar = () => {
-  const { authUser, setAuthUser, baseURL ,setUserId ,userId } = useContext(AuthContext);
-  
-  const [user,setUser]=useState();
- 
+  const { authUser, setAuthUser, baseURL, setUserId, userId } =
+    useContext(AuthContext);
+
+  const [user, setUser] = useState();
+
   const fetchUserData = async () => {
-
     try {
-
-
       const response = await axios.post(`${baseURL}/api/user/profile`, {
-        userID: authUser.userId,  // Sending userID in the request body
+        userID: authUser.userId, // Sending userID in the request body
       }); // Replace with your API endpoint
 
       setUser(response.data.user);
-    } catch (error) {
-      
-     
-    }
+    } catch (error) {}
   };
-   
+
   useEffect(() => {
     fetchUserData();
-  }, []);  
-  
+  }, []);
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.imageContainer}>
         <Image
           style={styles.profileImg}
-          source={
-            {
-               uri: userId.profileImage ? userId.profileImage : "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-
-            }
-          }
+          source={{
+            uri: userId.profileImage
+              ? userId.profileImage
+              : "https://plus.unsplash.com/premium_photo-1691003661129-3af2949db30a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          }}
         />
         <TouchableOpacity onPress={() => router.push("/NotificationScreen")}>
-
           <FontAwesome6 name="bell" size={24} color="black" />
         </TouchableOpacity>
       </View>

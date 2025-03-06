@@ -1,11 +1,19 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Alert } from "react-native";
-import { Picker } from '@react-native-picker/picker';
-import CountryFlag from 'react-native-country-flag';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import CountryFlag from "react-native-country-flag";
 import axios from "axios";
 import { AuthContext } from "../AuthContext/AuthContext";
 import { router } from "expo-router";
-
 
 const LoginWithPhone = () => {
   const [step, setStep] = useState(1);
@@ -16,8 +24,8 @@ const LoginWithPhone = () => {
   const [resendTimer, setResendTimer] = useState(20);
   const [selectedCountry, setSelectedCountry] = useState("FR");
   const [callingCode, setCallingCode] = useState("+33");
-  const { baseURL ,setPhoneVerified}=useContext(AuthContext);
-  const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const { baseURL, setPhoneVerified } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const countryList = [
     { code: "FR", name: "France", callingCode: "+33" },
@@ -47,16 +55,15 @@ const LoginWithPhone = () => {
     }
     return () => clearInterval(timer);
   }, [step, resendTimer]);
-  
-  const handleSendOTP = async (phoneNumber: string)=> {
-     const formattedPhoneNumber = `${callingCode}${phoneNumber.replace(/\s+/g, "")}`;
-     
-  
+
+  const handleSendOTP = async (phoneNumber: string) => {
+    const formattedPhoneNumber = `${callingCode}${phoneNumber.replace(/\s+/g, "")}`;
+
     setIsLoading(true);
     try {
-      const response = await axios.post(`${baseURL}/api/user/send-code`,{
-        phoneNumber:formattedPhoneNumber,
-      })
+      const response = await axios.post(`${baseURL}/api/user/send-code`, {
+        phoneNumber: formattedPhoneNumber,
+      });
       setOtp(Array(6).fill(""));
       setStep(2);
       setResendTimer(20);
@@ -64,9 +71,8 @@ const LoginWithPhone = () => {
     } catch (error) {
       alert("Error sending OTP. Please try again.");
       console.log(error);
-      
     } finally {
-      setIsLoading(false);  
+      setIsLoading(false);
     }
   };
 
@@ -80,29 +86,25 @@ const LoginWithPhone = () => {
         otpRefs.current[index + 1]?.focus();
       }
     }
-  };   
+  };
 
-
-  
-
-  const handleOTPSubmit = async ( )=> {
+  const handleOTPSubmit = async () => {
     const formattedPhoneNumber = `${callingCode}${phoneNumber.replace(/\s+/g, "")}`;
     const otpString = otp.join("");
     setPhoneVerified(true);
     router.push("/(auth)/SignUp");
     setIsLoading(true);
     try {
-      const response = await  axios.post(`${baseURL}/api/user/send-code`,{
-        phoneNumber:formattedPhoneNumber,
-        opt:otpString,
-      }) 
+      const response = await axios.post(`${baseURL}/api/user/send-code`, {
+        phoneNumber: formattedPhoneNumber,
+        opt: otpString,
+      });
       setPhoneVerified(true);
       Alert.alert("OTP verified successfully!");
-      
     } catch (error) {
       setWrongOtp(true);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -111,7 +113,9 @@ const LoginWithPhone = () => {
       {step === 1 ? (
         <View>
           <Text style={styles.header}>Log in</Text>
-          <Text style={styles.subtext}>Please confirm your country code and enter your phone number.</Text>
+          <Text style={styles.subtext}>
+            Please confirm your country code and enter your phone number.
+          </Text>
           <View style={styles.dropdown}>
             <Picker
               selectedValue={selectedCountry}
@@ -119,7 +123,11 @@ const LoginWithPhone = () => {
               style={styles.dropdown}
             >
               {countryList.map((country) => (
-                <Picker.Item key={country.code} label={`${country.name} (${country.callingCode})`} value={country.code} />
+                <Picker.Item
+                  key={country.code}
+                  label={`${country.name} (${country.callingCode})`}
+                  value={country.code}
+                />
               ))}
             </Picker>
           </View>
@@ -142,22 +150,29 @@ const LoginWithPhone = () => {
               keyboardType="phone-pad"
               value={phoneNumber}
               onChangeText={setPhoneNumber}
-              maxLength={15} 
+              maxLength={15}
             />
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={() => handleSendOTP(phoneNumber)} disabled={!phoneNumber}>
-           {isLoading ? (
-                     <ActivityIndicator size="small" color="#FFFFFF" />
-                   ) : ( <Text style={styles.buttonText}>Continue</Text>
-                   )
-                  }
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleSendOTP(phoneNumber)}
+            disabled={!phoneNumber}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.buttonText}>Continue</Text>
+            )}
           </TouchableOpacity>
         </View>
       ) : (
         <View>
           <Text style={styles.header}>Enter code</Text>
-          <Text style={styles.subtext}>We've sent an SMS with an activation code to your phone {callingCode} {phoneNumber}</Text>
+          <Text style={styles.subtext}>
+            We've sent an SMS with an activation code to your phone{" "}
+            {callingCode} {phoneNumber}
+          </Text>
           <View style={styles.otpContainer}>
             {otp.map((digit, index) => (
               <TextInput
@@ -172,11 +187,14 @@ const LoginWithPhone = () => {
               />
             ))}
           </View>
-          {wrongOtp && <Text style={styles.errorText}>Wrong code, please try again</Text>}
+          {wrongOtp && (
+            <Text style={styles.errorText}>Wrong code, please try again</Text>
+          )}
           <TouchableOpacity style={styles.button} onPress={handleOTPSubmit}>
             {isLoading ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
-            ) : (<Text style={styles.buttonText}>Verify</Text>
+            ) : (
+              <Text style={styles.buttonText}>Verify</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -189,16 +207,59 @@ const styles = StyleSheet.create({
   container: { flexGrow: 1, padding: 20, backgroundColor: "#fff" },
   header: { fontSize: 28, fontWeight: "bold", marginBottom: 10 },
   subtext: { fontSize: 14, color: "#555", marginBottom: 20 },
-  phoneContainer: { flexDirection: "row", alignItems: "center", marginBottom: 20 },
-  countryCode: { width: 60, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, textAlign: "center", marginRight: 10 },
-  phoneInput: { flex: 1, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, paddingLeft: 10 },
-  button: { backgroundColor: "#4F8EF7", borderRadius: 8, paddingVertical: 12, alignItems: "center", marginTop: 10 },
+  phoneContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  countryCode: {
+    width: 60,
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    textAlign: "center",
+    marginRight: 10,
+  },
+  phoneInput: {
+    flex: 1,
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingLeft: 10,
+  },
+  button: {
+    backgroundColor: "#4F8EF7",
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: "center",
+    marginTop: 10,
+  },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  dropdown: { marginBottom: 10, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, overflow: "hidden" },
-  otpContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 20 },
-  otpInput: { width: 40, height: 50, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, textAlign: "center", fontSize: 20 },
+  dropdown: {
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  otpContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  otpInput: {
+    width: 40,
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    textAlign: "center",
+    fontSize: 20,
+  },
   errorText: { color: "red", textAlign: "center", marginBottom: 10 },
-  flagAndText: { flexDirection: "row", alignItems: "center", marginBottom: 10  },
+  flagAndText: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   flagText: { marginLeft: 10, fontSize: 16 },
 });
 

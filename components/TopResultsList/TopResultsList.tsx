@@ -1,4 +1,10 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Image } from "expo-image";
@@ -13,7 +19,7 @@ const TopResultsList = ({ title, items }) => {
       pathname: "/MoreInfo",
       params: {
         title: title,
-        category:item.category,
+        category: item.category,
         id: item._id,
         name: item.businessName,
         fees: item.fees,
@@ -21,19 +27,18 @@ const TopResultsList = ({ title, items }) => {
         reviews: item.reviews,
         clients: item.clients,
         image: item.businessImage,
-        phoneNumber:item.phoneNumber,
-        priceStartsFrom:JSON.stringify(item.priceStartsFrom),
-        headstoneImage:JSON.stringify(item.headstoneImage),
+        phoneNumber: item.phoneNumber,
+        priceStartsFrom: JSON.stringify(item.priceStartsFrom),
+        headstoneImage: JSON.stringify(item.headstoneImage),
         rating: item.rating,
         location: item.address || "",
         desc: item.description || "",
         businessImages: JSON.stringify(item.businessImages), // Pass as JSON string
-        headstoneNames: JSON.stringify(item.headstoneNames), 
+        headstoneNames: JSON.stringify(item.headstoneNames),
       },
     });
-  }; 
-  
- 
+  };
+
   const ListItem = ({ item }) => {
     return (
       <TouchableOpacity
@@ -42,11 +47,12 @@ const TopResultsList = ({ title, items }) => {
         activeOpacity={0.8} // Added activeOpacity for better feedback
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Image source={{
-              uri:
-                item.headstoneImage[0] || item.businessImages[0]
-                
-            }} style={styles.itemImage} />
+          <Image
+            source={{
+              uri: item.headstoneImage[0] || item.businessImages[0],
+            }}
+            style={styles.itemImage}
+          />
           <View style={styles.rightContainer}>
             <View style={styles.rightInnerContainer}>
               <View style={styles.nameContainer}>
@@ -57,8 +63,6 @@ const TopResultsList = ({ title, items }) => {
                   </Text>
                 )}
               </View>
-              
-
             </View>
             <View style={styles.rightCornerContainer}>
               <View style={styles.ratingItem}>

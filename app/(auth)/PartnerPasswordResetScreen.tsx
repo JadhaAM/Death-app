@@ -1,67 +1,87 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image,GestureResponderEvent, ActivityIndicator } from 'react-native';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import axios from 'axios';
-import { router } from 'expo-router';
-import { AuthContext } from '../AuthContext/AuthContext';
+import React, { useContext, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Image,
+  GestureResponderEvent,
+  ActivityIndicator,
+} from "react-native";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
+import { router } from "expo-router";
+import { AuthContext } from "../AuthContext/AuthContext";
 
-const PartnerPasswordResetScreen= () => {
-
+const PartnerPasswordResetScreen = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-   const { admin , baseURL} = useContext(AuthContext);
+  const { admin, baseURL } = useContext(AuthContext);
   const validationSchema = Yup.object().shape({
     password: Yup.string()
-      .min(8, 'Password must be at least 8 characters long')
-      .required('Password is required'),
+      .min(8, "Password must be at least 8 characters long")
+      .required("Password is required"),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password')], 'Passwords must match')
-      .required('Confirm your password'),
+      .oneOf([Yup.ref("password")], "Passwords must match")
+      .required("Confirm your password"),
   });
-  
-  const handleSubmit = async (values: { password: string ,confirmPassword:string }) => {
+
+  const handleSubmit = async (values: {
+    password: string;
+    confirmPassword: string;
+  }) => {
     console.log(admin.id);
     try {
       setIsLoading(true);
-       await axios.post(`${baseURL}/api/partner/reset-password`, {
+      await axios.post(`${baseURL}/api/partner/reset-password`, {
         password: values.password,
         confirmPassword: values.confirmPassword,
-        userID:admin.id,
+        userID: admin.id,
       });
-      Alert.alert('Success', 'Your password has been changed successfully!');
+      Alert.alert("Success", "Your password has been changed successfully!");
       router.push("/(auth)/AdminSignIn");
     } catch (error) {
       Alert.alert("Error", "Failed to sign out");
     } finally {
       setIsLoading(false);
     }
-   
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-              <Image
-                source={require('../../assets/images/Star 8.png')}
-                style={styles.logo}
-              />
-            </View>
+        <Image
+          source={require("../../assets/images/Star 8.png")}
+          style={styles.logo}
+        />
+      </View>
       <Formik
-        initialValues={{ password: '', confirmPassword: '' }}
+        initialValues={{ password: "", confirmPassword: "" }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
           <>
             <Text style={styles.title}>Reset password</Text>
-            <Text style={styles.subtitle}>Please type something you’ll remember</Text>
+            <Text style={styles.subtitle}>
+              Please type something you’ll remember
+            </Text>
 
             <TextInput
               style={styles.input}
               placeholder="New password"
               secureTextEntry
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
               value={values.password}
             />
             {touched.password && errors.password && (
@@ -72,25 +92,41 @@ const PartnerPasswordResetScreen= () => {
               style={styles.input}
               placeholder="Confirm new password"
               secureTextEntry
-              onChangeText={handleChange('confirmPassword')}
-              onBlur={handleBlur('confirmPassword')}
+              onChangeText={handleChange("confirmPassword")}
+              onBlur={handleBlur("confirmPassword")}
               value={values.confirmPassword}
             />
             {touched.confirmPassword && errors.confirmPassword && (
               <Text style={styles.error}>{errors.confirmPassword}</Text>
             )}
 
-            <TouchableOpacity style={styles.button} onPress={handleSubmit as unknown as (event: GestureResponderEvent) => void} disabled={isLoading}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={
+                handleSubmit as unknown as (
+                  event: GestureResponderEvent,
+                ) => void
+              }
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (<Text style={styles.buttonText}>Reset password</Text>)}
+              ) : (
+                <Text style={styles.buttonText}>Reset password</Text>
+              )}
             </TouchableOpacity>
           </>
         )}
       </Formik>
 
       <Text style={styles.footer}>
-        Already have an account? <Text style={styles.loginText} onPress={() => router.push("/(auth)/AdminSignIn")}>Log In</Text>
+        Already have an account?{" "}
+        <Text
+          style={styles.loginText}
+          onPress={() => router.push("/(auth)/AdminSignIn")}
+        >
+          Log In
+        </Text>
       </Text>
     </View>
   );
@@ -100,8 +136,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    backgroundColor: "#fff",
   },
   logoContainer: {
     marginBottom: 20,
@@ -109,53 +145,53 @@ const styles = StyleSheet.create({
   logo: {
     width: 220,
     height: 250,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#000',
+    fontWeight: "700",
+    color: "#000",
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 16,
-    color: '#555',
+    color: "#555",
     marginBottom: 20,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 8,
     padding: 15,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#2962FF',
+    backgroundColor: "#2962FF",
     borderRadius: 8,
     paddingVertical: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   error: {
-    color: 'red',
+    color: "red",
     fontSize: 14,
     marginBottom: 10,
   },
   footer: {
     marginTop: 40,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 14,
-    color: '#333',
+    color: "#333",
   },
   loginText: {
-    fontWeight: 'bold',
-    color: '#4F8EF7',
+    fontWeight: "bold",
+    color: "#4F8EF7",
   },
 });
 

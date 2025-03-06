@@ -7,7 +7,11 @@ import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ActivityIndicator, View, Linking } from "react-native";
-import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,7 +27,7 @@ function AppContent() {
   const { token, setToken } = useContext(AuthContext);
   const colorScheme = useColorScheme();
   const [isTokenFetched, setIsTokenFetched] = useState(false);
-  const [loading, setLoading] = useState(true);  // Loading state for token processing
+  const [loading, setLoading] = useState(true); // Loading state for token processing
 
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -33,7 +37,7 @@ function AppContent() {
     const processToken = async (url: string | null) => {
       if (!url) {
         console.log("No URL provided for processing.");
-        setLoading(false);  // Stop loading if no URL
+        setLoading(false); // Stop loading if no URL
         return;
       }
 
@@ -60,7 +64,7 @@ function AppContent() {
         console.log("No token found in URL.");
       }
 
-      setLoading(false);  // Stop loading once token is processed
+      setLoading(false); // Stop loading once token is processed
     };
 
     const handleInitialURL = async () => {
@@ -71,7 +75,7 @@ function AppContent() {
       if (initialUrl && initialUrl.includes("token")) {
         await processToken(initialUrl);
       } else {
-        setLoading(false);  // Stop loading if no URL or token
+        setLoading(false); // Stop loading if no URL or token
       }
     };
 
@@ -102,7 +106,7 @@ function AppContent() {
         console.error("Error fetching token:", error);
       }
       setIsTokenFetched(true);
-      setLoading(false);  // Stop loading once the token fetch is complete
+      setLoading(false); // Stop loading once the token fetch is complete
     };
 
     fetchUserToken();
@@ -130,7 +134,10 @@ function AppContent() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="Listings" options={{ headerShown: false }} />
         <Stack.Screen name="ChatScreen" options={{ headerShown: false }} />
-        <Stack.Screen name="NotificationScreen" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="NotificationScreen"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="MoreInfo" options={{ headerShown: false }} />
         <Stack.Screen name="EditProfile" options={{ headerShown: false }} />
         <Stack.Screen name="AdminChat" options={{ headerShown: false }} />
@@ -139,7 +146,10 @@ function AppContent() {
         <Stack.Screen name="EditBussnesses" options={{ headerShown: false }} />
         <Stack.Screen name="AddBussnesses" options={{ headerShown: false }} />
         <Stack.Screen name="ContactLog" options={{ headerShown: false }} />
-        <Stack.Screen name="RecentBusinessLog" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="RecentBusinessLog"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

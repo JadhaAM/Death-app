@@ -3,18 +3,20 @@
     "version": ">= 13.4.2",
     "appVersionSource": "remote"
   },
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
+  
+    "build": {
+      "preview": {
+        "android": {
+          "buildType": "apk"
+        }
+      },
+      "development": {
+        "android": {
+          "buildType": "apk"
+        },
+        "developmentClient": true
+      }
     },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {
-      "autoIncrement": true
-    }
-  },
   "submit": {
     "production": {}
   }

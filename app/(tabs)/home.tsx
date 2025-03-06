@@ -14,28 +14,31 @@ interface BusinessItem {
   businessName: string;
   rating: number;
   reviews: number;
-  category:String,
+  category: String;
   designation?: string; // For attorneys
   availability?: string; // For attorneys
   fees?: string; // For attorneys
   location?: string; // For headstones
   businessImage: string;
-  phoneNumber:Number;
-  businessImages:String;
+  phoneNumber: Number;
+  businessImages: String;
 }
 
 const Home = () => {
-  const { isSurvyDone,baseURL } = useContext(AuthContext);
+  const { isSurvyDone, baseURL } = useContext(AuthContext);
   const [attorneys, setAttorneys] = useState<BusinessItem[]>([]);
   const [headstones, setHeadstones] = useState<BusinessItem[]>([]);
 
   useEffect(() => {
-    if(!isSurvyDone) {
+    if (!isSurvyDone) {
       router.push("/(auth)/Survey");
     }
   }, [isSurvyDone]);
 
-  const fetchData = async (category: string, setData: React.Dispatch<React.SetStateAction<BusinessItem[]>>) => {
+  const fetchData = async (
+    category: string,
+    setData: React.Dispatch<React.SetStateAction<BusinessItem[]>>,
+  ) => {
     try {
       const response = await axios.get(`${baseURL}/api/businesses/${category}`);
       const data = response.data.map((item: any) => ({
@@ -78,10 +81,7 @@ const Home = () => {
           <Services />
 
           {/* Top Attorneys */}
-          <TopRated
-            title="Top Attorneys"
-            items={attorneys}
-          />
+          <TopRated title="Top Attorneys" items={attorneys} />
 
           {/* Memorial Consulting Section */}
           <View style={styles.iconContainer}>
@@ -93,10 +93,7 @@ const Home = () => {
           </View>
 
           {/* Top Headstones */}
-          <TopRated
-            title="Top Headstones"
-            items={headstones}
-          />
+          <TopRated title="Top Headstones" items={headstones} />
         </View>
       </ScrollView>
     </SafeAreaView>

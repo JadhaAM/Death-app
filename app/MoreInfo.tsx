@@ -43,9 +43,34 @@ const StatsList = [
 ];
 
 const MoreInfo = () => {
-  const { title, name, fees, role, rating, location, desc, category, id, phoneNumber, years,reviews,
-    clients, priceStartsFrom, headstoneImage,businessImages, headstoneNames } = useLocalSearchParams();
-  const { authUser, setauthUser, setUserId, userId, setToken, baseURL, setReceiverId } = useContext(AuthContext);
+  const {
+    title,
+    name,
+    fees,
+    role,
+    rating,
+    location,
+    desc,
+    category,
+    id,
+    phoneNumber,
+    years,
+    reviews,
+    clients,
+    priceStartsFrom,
+    headstoneImage,
+    businessImages,
+    headstoneNames,
+  } = useLocalSearchParams();
+  const {
+    authUser,
+    setauthUser,
+    setUserId,
+    userId,
+    setToken,
+    baseURL,
+    setReceiverId,
+  } = useContext(AuthContext);
 
   const StatsItem = ({ title, value, img }) => (
     <View style={styles.statsItem}>
@@ -58,10 +83,14 @@ const MoreInfo = () => {
   );
 
   // Dynamically build the `items` array
-   const image=businessImages ? JSON.parse(businessImages) : [];
-  const parsedHeadstoneImages = headstoneImage ? JSON.parse(headstoneImage) : [];
+  const image = businessImages ? JSON.parse(businessImages) : [];
+  const parsedHeadstoneImages = headstoneImage
+    ? JSON.parse(headstoneImage)
+    : [];
   const parsedHeadstoneNames = headstoneNames ? JSON.parse(headstoneNames) : [];
-  const parsedpriceStartsFrom = priceStartsFrom ? JSON.parse(priceStartsFrom) : [];
+  const parsedpriceStartsFrom = priceStartsFrom
+    ? JSON.parse(priceStartsFrom)
+    : [];
   const items = parsedHeadstoneNames.map((headstoneName, index) => ({
     _id: index.toString(),
     name: headstoneName,
@@ -71,7 +100,6 @@ const MoreInfo = () => {
   const handleCallPress = async () => {
     try {
       console.log(`Business ID: ${id}`);
-
 
       const businessId = id;
       const phoneURL = `tel:${phoneNumber}`;
@@ -83,26 +111,30 @@ const MoreInfo = () => {
         await Linking.openURL(phoneURL);
 
         // Navigate to ContactLog screen after phone app opens successfully
-        console.log("Phone dialer opened successfully. Navigating to ContactLog...");
-        const Contact = await axios.post(`${baseURL}/api/businesses/create-contact`, {
-          userId: authUser.userId,
-          businessId: businessId,
-        })
+        console.log(
+          "Phone dialer opened successfully. Navigating to ContactLog...",
+        );
+        const Contact = await axios.post(
+          `${baseURL}/api/businesses/create-contact`,
+          {
+            userId: authUser.userId,
+            businessId: businessId,
+          },
+        );
         if (Contact.status === 201) {
           router.push({
             pathname: "/ContactLog",
             params: {
               name: name,
               businessId: businessId,
-            }
+            },
           });
         }
-
       } else {
         // Alert the user if calling isn't supported
         Alert.alert(
           "Error",
-          "Unable to make a call. Calling feature is not supported on this device."
+          "Unable to make a call. Calling feature is not supported on this device.",
         );
       }
     } catch (err) {
@@ -111,13 +143,11 @@ const MoreInfo = () => {
     }
   };
 
-
-
   const MessagePress = async () => {
     try {
       console.log(`receiver id :${id}`);
       const fullName = name;
-      const receiverId = id
+      const receiverId = id;
       router.push({
         pathname: "/ChatScreen",
         params: {
@@ -127,11 +157,8 @@ const MoreInfo = () => {
       });
     } catch (error) {
       console.log("user id error :", error);
-
     }
-
   };
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,23 +167,23 @@ const MoreInfo = () => {
       {/* ------------------ Top container ----------------------*/}
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Image */}
-        
+
         <View style={styles.swiperContainer}>
-                <Swiper
-                  style={styles.wrapper}
-                  showsButtons={false}
-                  showsPagination={true}
-                >
-                  {image.map((img, index) => (
-                    <View key={index} style={styles.slide}>
-                      <Image source={{ uri: img }} style={styles.productImg} />
-                    </View>
-                  ))}
-                </Swiper>
-                  <TouchableOpacity style={styles.likeBtn}>
-                    <Ionicons name="heart-outline" size={22} color="#3E69FE" />
-                  </TouchableOpacity>
+          <Swiper
+            style={styles.wrapper}
+            showsButtons={false}
+            showsPagination={true}
+          >
+            {image.map((img, index) => (
+              <View key={index} style={styles.slide}>
+                <Image source={{ uri: img }} style={styles.productImg} />
               </View>
+            ))}
+          </Swiper>
+          <TouchableOpacity style={styles.likeBtn}>
+            <Ionicons name="heart-outline" size={22} color="#3E69FE" />
+          </TouchableOpacity>
+        </View>
 
         {/* -----------------Middle Container ------------------- */}
 
@@ -164,8 +191,9 @@ const MoreInfo = () => {
         <View>
           {/* Name and rating */}
           <View style={styles.nameCont}>
-            <View><Text style={styles.name}>{name}</Text>
-              <Text style={styles.Subname}>{role }</Text>
+            <View>
+              <Text style={styles.name}>{name}</Text>
+              <Text style={styles.Subname}>{role}</Text>
               {/* <Text style={styles.Subname}>{fees ? `Fees: start from $ ${fees}` : ``}</Text> */}
             </View>
 
@@ -193,9 +221,7 @@ const MoreInfo = () => {
         {/* Info */}
         <View style={{ marginTop: 15 }}>
           <Text style={styles.infoTitle}>About this cemetery</Text>
-          <Text style={styles.infoValue}>
-            {desc}
-          </Text>
+          <Text style={styles.infoValue}>{desc}</Text>
         </View>
         {category === "Headstones" && items.length > 0 && (
           <HeadstonesList title="Headstones available" items={items} />
@@ -207,7 +233,9 @@ const MoreInfo = () => {
             style={[styles.ctaBtn, { backgroundColor: "#3FC066" }]}
           >
             <Feather name="phone" size={24} color="#fff" />
-            <Text style={styles.ctnBtnText} onPress={handleCallPress}>Call Now</Text>
+            <Text style={styles.ctnBtnText} onPress={handleCallPress}>
+              Call Now
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.ctaBtn, { backgroundColor: "#CE4D3C" }]}
@@ -217,7 +245,9 @@ const MoreInfo = () => {
               size={24}
               color="#fff"
             />
-            <Text style={styles.ctnBtnText} onPress={MessagePress}>Message</Text>
+            <Text style={styles.ctnBtnText} onPress={MessagePress}>
+              Message
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -225,13 +255,12 @@ const MoreInfo = () => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   container: {
     padding: 10,
     flex: 1,
     backgroundColor: "#fff",
+   
   },
   productImg: {
     height: 220,

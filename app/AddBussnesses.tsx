@@ -9,47 +9,47 @@ import {
   ScrollView,
 } from "react-native";
 import { Formik } from "formik";
-import * as Yup from 'yup';
-import { Picker } from '@react-native-picker/picker';
+import * as Yup from "yup";
+import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { router } from "expo-router";
 import Header from "@/components/Header";
 import { AuthContext } from "./AuthContext/AuthContext";
 
 const validCategories = [
-  'Funeral Homes',
-  'Cemeteries',
-  'Headstones',
-  'Attorneys',
-  'Memorial Consulting',
-  'Life Insurance'
+  "Funeral Homes",
+  "Cemeteries",
+  "Headstones",
+  "Attorneys",
+  "Memorial Consulting",
+  "Life Insurance",
 ];
 
 const validationSchema = Yup.object().shape({
-  businessName: Yup.string().required('Business name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  partnerName: Yup.string().required('Partner name is required'),
+  businessName: Yup.string().required("Business name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  partnerName: Yup.string().required("Partner name is required"),
   category: Yup.string()
-    .oneOf(validCategories, 'Invalid category')
-    .required('Category is required'),
-  address: Yup.string().required('Address is required'),
+    .oneOf(validCategories, "Invalid category")
+    .required("Category is required"),
+  address: Yup.string().required("Address is required"),
   rating: Yup.number()
-    .min(0, 'Rating must be between 0 and 5')
-    .max(5, 'Rating must be between 0 and 5')
-    .required('Rating is required'),
+    .min(0, "Rating must be between 0 and 5")
+    .max(5, "Rating must be between 0 and 5")
+    .required("Rating is required"),
   description: Yup.string(),
   years: Yup.number()
-    .min(0, 'Years must be positive')
-    .required('Years is required'),
+    .min(0, "Years must be positive")
+    .required("Years is required"),
   clients: Yup.number()
-    .min(0, 'Number of clients must be positive')
-    .required('Number of clients is required'),
+    .min(0, "Number of clients must be positive")
+    .required("Number of clients is required"),
   phoneNumber: Yup.string()
-    .matches(/^\d+$/, 'Phone number must contain only digits')
-    .required('Phone number is required'),
+    .matches(/^\d+$/, "Phone number must contain only digits")
+    .required("Phone number is required"),
   reviews: Yup.number()
-    .min(0, 'Number of reviews must be positive')
-    .required('Number of reviews is required'),
+    .min(0, "Number of reviews must be positive")
+    .required("Number of reviews is required"),
 });
 
 const AddBusinesses = () => {
@@ -60,11 +60,11 @@ const AddBusinesses = () => {
     setIsLoading(true);
     try {
       const formData = new FormData();
-      
+
       // Trim all string values and convert numbers to strings
       Object.keys(values).forEach((key) => {
         let value = values[key];
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
           value = value.trim();
         }
         formData.append(key, value.toString());
@@ -72,16 +72,20 @@ const AddBusinesses = () => {
 
       // Log form data for debugging
       for (let pair of formData._parts) {
-        console.log('FormData Entry:', pair[0], pair[1]);
+        console.log("FormData Entry:", pair[0], pair[1]);
       }
 
-      const response = await axios.post(`${baseURL}/api/businesses/`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await axios.post(
+        `${baseURL}/api/businesses/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
-      setBusiness(prevAdmin => ({
+      setBusiness((prevAdmin) => ({
         ...prevAdmin,
         business: {
           ...prevAdmin.business,
@@ -92,10 +96,14 @@ const AddBusinesses = () => {
       Alert.alert("Success", "Business added successfully");
       router.push("/RecentBusinessLog");
     } catch (error) {
-      console.error("Error submitting form:", error.response?.data || error.message);
+      console.error(
+        "Error submitting form:",
+        error.response?.data || error.message,
+      );
       Alert.alert(
         "Error",
-        error.response?.data?.message || "Failed to add business. Please check your inputs and try again."
+        error.response?.data?.message ||
+          "Failed to add business. Please check your inputs and try again.",
       );
     } finally {
       setIsLoading(false);
@@ -122,14 +130,26 @@ const AddBusinesses = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ handleChange, handleSubmit: formikSubmit, values, errors, touched, setFieldValue }) => (
+        {({
+          handleChange,
+          handleSubmit: formikSubmit,
+          values,
+          errors,
+          touched,
+          setFieldValue,
+        }) => (
           <>
             <ScrollView style={styles.container}>
               <Header title="Add Business" />
 
               <Text style={styles.label}>Business Name</Text>
               <TextInput
-                style={[styles.input, errors.businessName && touched.businessName && styles.inputError]}
+                style={[
+                  styles.input,
+                  errors.businessName &&
+                    touched.businessName &&
+                    styles.inputError,
+                ]}
                 placeholder="Enter Business Name"
                 onChangeText={handleChange("businessName")}
                 value={values.businessName}
@@ -142,12 +162,18 @@ const AddBusinesses = () => {
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={values.category}
-                  onValueChange={(itemValue) => setFieldValue("category", itemValue)}
+                  onValueChange={(itemValue) =>
+                    setFieldValue("category", itemValue)
+                  }
                   style={styles.picker}
                 >
                   <Picker.Item label="Select category" value="" />
                   {validCategories.map((category) => (
-                    <Picker.Item key={category} label={category} value={category} />
+                    <Picker.Item
+                      key={category}
+                      label={category}
+                      value={category}
+                    />
                   ))}
                 </Picker>
               </View>
@@ -156,11 +182,7 @@ const AddBusinesses = () => {
               )}
 
               {/* Add similar error handling for other fields */}
-            
 
-             
-
-             
               <Text style={styles.label}>Address</Text>
               <TextInput
                 style={styles.input}
@@ -232,13 +254,12 @@ const AddBusinesses = () => {
                 value={values.phoneNumber}
               />
               {/* Rest of the form fields remain the same but with error handling */}
-              
             </ScrollView>
 
             <TouchableOpacity
               style={[
                 styles.submitButton,
-                isLoading && styles.submitButtonDisabled
+                isLoading && styles.submitButtonDisabled,
               ]}
               onPress={() => formikSubmit(values)}
               disabled={isLoading}
@@ -301,7 +322,7 @@ const styles = StyleSheet.create({
     color: "#555",
     fontSize: 16,
   },
- 
+
   picker: {
     height: 50,
   },
@@ -341,7 +362,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   submitButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -360,10 +381,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   inputError: {
-    borderColor: 'red',
+    borderColor: "red",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 12,
     marginBottom: 10,
   },

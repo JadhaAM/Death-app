@@ -10,11 +10,12 @@ const TopRated = ({ title, items }) => {
   const [topRatedList, setTopRatedList] = useState([]);
 
   useEffect(() => {
-   
     if (items?.length > 0) {
       const sortedItems = [...items]
-        .sort((a, b) => b.rating - a.rating || items.indexOf(a) - items.indexOf(b))
-        .slice(0, 3); 
+        .sort(
+          (a, b) => b.rating - a.rating || items.indexOf(a) - items.indexOf(b),
+        )
+        .slice(0, 3);
 
       setTopRatedList(sortedItems);
     }
@@ -48,12 +49,12 @@ const TopRated = ({ title, items }) => {
           });
         }}
       >
-        <Image 
+        <Image
           source={{
             uri: item.headstoneImage[0] || item.businessImages[0],
-          }} 
-          style={styles.itemImg} 
-          contentFit="cover" 
+          }}
+          style={styles.itemImg}
+          contentFit="cover"
         />
         <Text style={styles.itemTitle}>{item.businessName}</Text>
         <Text style={styles.itemSubtitle}>{item.open}</Text>

@@ -1,7 +1,15 @@
 import axios from "axios";
 import { Image } from "expo-image";
 import React, { useContext, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Dimensions,
+  Alert,
+} from "react-native";
 import { AuthContext } from "../AuthContext/AuthContext";
 import { router } from "expo-router";
 
@@ -18,12 +26,13 @@ interface Question {
 const Survey: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | null>>({});
-  const { baseURL, authUser, setSurvyDone , userId} = useContext(AuthContext);
+  const { baseURL, authUser, setSurvyDone, userId } = useContext(AuthContext);
 
   const questions: Question[] = [
     {
       id: 1,
-      question: "Are you looking to use our services for yourself or for your relative?",
+      question:
+        "Are you looking to use our services for yourself or for your relative?",
       options: ["Myself", "Relative"],
       isVisible: () => true,
     },
@@ -59,7 +68,8 @@ const Survey: React.FC = () => {
     },
     {
       id: 7,
-      question: "Do you want a free consultation regarding your legacy memorial?",
+      question:
+        "Do you want a free consultation regarding your legacy memorial?",
       options: ["Yes", "No"],
       isVisible: (answers) => answers[1] === "Myself",
     },
@@ -83,7 +93,8 @@ const Survey: React.FC = () => {
     },
     {
       id: 11,
-      question: "Does your relative have legal representation for their legacy?",
+      question:
+        "Does your relative have legal representation for their legacy?",
       options: ["Yes", "No"],
       isVisible: (answers) => answers[1] === "Relative",
     },
@@ -95,7 +106,8 @@ const Survey: React.FC = () => {
     },
     {
       id: 13,
-      question: "Do you want a free consultation regarding your relative's legacy memorial?",
+      question:
+        "Do you want a free consultation regarding your relative's legacy memorial?",
       options: ["Yes", "No"],
       isVisible: (answers) => answers[1] === "Relative",
     },
@@ -117,29 +129,30 @@ const Survey: React.FC = () => {
 
   const handelNavigation = async () => {
     const responses = Object.entries(answers).map(([questionId, answer]) => {
-      const questionText = questions.find(q => q.id === parseInt(questionId))?.question;
+      const questionText = questions.find(
+        (q) => q.id === parseInt(questionId),
+      )?.question;
       return {
         question: questionText,
         answer: answer,
       };
     });
 
-  
-
     try {
       let getuserid = authUser?.userId ?? userId;
-      const response = await axios.post(`${baseURL}/api/user/survey/submit-survey`, {
-        userId: getuserid,
-        responses: responses,
-      });
+      const response = await axios.post(
+        `${baseURL}/api/user/survey/submit-survey`,
+        {
+          userId: getuserid,
+          responses: responses,
+        },
+      );
 
       if (response.status === 201) {
         setSurvyDone(true);
         router.push("/(tabs)/home");
-        
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleNext = () => {
@@ -147,7 +160,6 @@ const Survey: React.FC = () => {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       handelNavigation();
-    
     }
   };
 
@@ -185,7 +197,7 @@ const Survey: React.FC = () => {
         <View style={styles.optionsContainer}>
           {currentQuestion.options.map((option, index) => (
             <TouchableOpacity
-              key={index}  
+              key={index}
               style={[
                 styles.radioOption,
                 answers[currentQuestion.id] === option && styles.selectedOption,
@@ -196,7 +208,8 @@ const Survey: React.FC = () => {
               <View
                 style={[
                   styles.radioCircle,
-                  answers[currentQuestion.id] === option && styles.selectedCircle,
+                  answers[currentQuestion.id] === option &&
+                    styles.selectedCircle,
                 ]}
               />
             </TouchableOpacity>
@@ -210,7 +223,10 @@ const Survey: React.FC = () => {
           <Text style={styles.buttonText}>Skip</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.continueButton, !answers[currentQuestion.id] && styles.disabledButton]}
+          style={[
+            styles.continueButton,
+            !answers[currentQuestion.id] && styles.disabledButton,
+          ]}
           onPress={handleNext}
           disabled={!answers[currentQuestion.id]}
         >

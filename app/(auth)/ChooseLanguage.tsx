@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-
 } from "react-native";
 import { Image } from "expo-image";
 
@@ -23,9 +22,7 @@ const languages = [
 const ChooseLanguage = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("English");
 
-  const handleContinue = () => {
-   
-  };
+  const handleContinue = () => {};
 
   return (
     <View style={styles.container}>
@@ -35,16 +32,16 @@ const ChooseLanguage = () => {
         account.
       </Text>
       <View style={styles.searchbarContainer}>
-            <Image
-              source={"https://img.icons8.com/metro/26/search.png"}
-              style={styles.searchIcon}
-            />
-            <TextInput
-              placeholder="Search"
-              style={styles.textInput}
-              placeholderTextColor="#a9a9a9"
-            />
-          </View>
+        <Image
+          source={"https://img.icons8.com/metro/26/search.png"}
+          style={styles.searchIcon}
+        />
+        <TextInput
+          placeholder="Search"
+          style={styles.textInput}
+          placeholderTextColor="#a9a9a9"
+        />
+      </View>
       <FlatList
         data={languages}
         keyExtractor={(item) => item.id}
@@ -84,7 +81,13 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 20,
   },
-  dropdown: { marginBottom: 20, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, overflow: "hidden" },
+  dropdown: {
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
   searchbarContainer: {
     flex: 1,
     flexDirection: "row",

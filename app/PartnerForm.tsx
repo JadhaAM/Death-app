@@ -15,34 +15,43 @@ import { router } from "expo-router";
 import Header from "@/components/Header";
 import { AuthContext } from "./AuthContext/AuthContext";
 import * as ImagePicker from "expo-image-picker";
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from "@react-native-picker/picker";
 
 const PartnerForm = () => {
   const { admin, setAdmin, baseURL } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const [headstones, setHeadstones] = useState(
-    Array(5).fill({ type: "select type", fees: "", image: null })
+    Array(5).fill({ type: "select type", fees: "", image: null }),
   );
 
   const headstoneTypes = [
-    "select type", "FLAT GRAVE", "BEVEL", "SLANTED", "UPRIGHT", "SPECIALTY"
+    "select type",
+    "FLAT GRAVE",
+    "BEVEL",
+    "SLANTED",
+    "UPRIGHT",
+    "SPECIALTY",
   ];
 
   const handleHeadstoneChange = (index, field, value) => {
     const updatedHeadstones = [...headstones];
     updatedHeadstones[index] = {
       ...updatedHeadstones[index],
-      [field]: value
+      [field]: value,
     };
     setHeadstones(updatedHeadstones);
   };
 
   const pickImage = async (index) => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert("Permission Denied", "Grant media permissions to upload images.");
+        Alert.alert(
+          "Permission Denied",
+          "Grant media permissions to upload images.",
+        );
         return;
       }
 
@@ -54,14 +63,14 @@ const PartnerForm = () => {
       });
 
       if (!result.canceled) {
-        const uri = result.assets[0].uri;  
-        const fileName = uri.split("/").pop();  
-        const type = `image/${fileName.split(".").pop()}`;  
+        const uri = result.assets[0].uri;
+        const fileName = uri.split("/").pop();
+        const type = `image/${fileName.split(".").pop()}`;
         const image = {
           uri,
           fileName,
-          type
-        }
+          type,
+        };
         handleHeadstoneChange(index, "image", image.uri);
       }
     } catch (error) {
@@ -80,25 +89,25 @@ const PartnerForm = () => {
         formData.append(key, values[key]);
       });
       console.log("values", values);
-      
+
       if (admin.business.category === "Headstones") {
         headstones.forEach((headstone, index) => {
           if (headstone.type !== "select type") {
             formData.append(`headstoneNames`, headstone.type);
-            
+
             if (headstone.fees) {
               formData.append(`priceStartsFrom`, headstone.fees.toString());
             }
-            
+
             if (headstone.image) {
-              const filename = headstone.image.split('/').pop();
+              const filename = headstone.image.split("/").pop();
               const match = /\.(\w+)$/.exec(filename);
-              const type = match ? `image/${match[1]}` : 'image/jpeg';
-              
+              const type = match ? `image/${match[1]}` : "image/jpeg";
+
               formData.append(`headstoneImage`, {
                 uri: headstone.image,
                 name: filename,
-                type: type
+                type: type,
               });
             }
           }
@@ -106,16 +115,20 @@ const PartnerForm = () => {
       }
 
       for (let pair of formData._parts) {
-        console.log('FormData Entry:', pair[0], pair[1]);
+        console.log("FormData Entry:", pair[0], pair[1]);
       }
 
-      const response = await axios.put(`${baseURL}/api/businesses/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await axios.put(
+        `${baseURL}/api/businesses/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
-      setAdmin(prevAdmin => ({
+      setAdmin((prevAdmin) => ({
         ...prevAdmin,
         business: {
           ...prevAdmin.business,
@@ -126,10 +139,13 @@ const PartnerForm = () => {
       Alert.alert("Success", "Profile updated successfully");
       router.push("/EditBussnesses");
     } catch (error) {
-      console.error("Error submitting form:", error.response?.data || error.message);
+      console.error(
+        "Error submitting form:",
+        error.response?.data || error.message,
+      );
       Alert.alert(
         "Error",
-        "Failed to update profile. Please check your inputs and try again."
+        "Failed to update profile. Please check your inputs and try again.",
       );
     } finally {
       setIsLoading(false);
@@ -242,7 +258,9 @@ const PartnerForm = () => {
                   <Text style={styles.label2}>Edit Headstones Types</Text>
                   {headstones.map((item, index) => (
                     <View key={index} style={styles.headstoneContainer}>
-                      <Text style={styles.label}>Headstone Type {index + 1}</Text>
+                      <Text style={styles.label}>
+                        Headstone Type {index + 1}
+                      </Text>
                       <View style={styles.pickerContainer}>
                         <Picker
                           selectedValue={item.type}
@@ -268,19 +286,21 @@ const PartnerForm = () => {
                         }
                       />
 
-                      <Text style={styles.label}>Upload Image for Headstone</Text>
+                      <Text style={styles.label}>
+                        Upload Image for Headstone
+                      </Text>
                       <TouchableOpacity
                         style={styles.uploadButton}
                         onPress={() => pickImage(index)}
                       >
                         <Text style={styles.uploadButtonText}>
-                          {item.image ? 'Change Image' : 'Pick Image'}
+                          {item.image ? "Change Image" : "Pick Image"}
                         </Text>
                       </TouchableOpacity>
-                      
+
                       {item.image && (
-                        <Image 
-                          source={{ uri: item.image }} 
+                        <Image
+                          source={{ uri: item.image }}
                           style={styles.imagePreview}
                         />
                       )}
@@ -293,7 +313,7 @@ const PartnerForm = () => {
             <TouchableOpacity
               style={[
                 styles.submitButton,
-                isLoading && styles.submitButtonDisabled
+                isLoading && styles.submitButtonDisabled,
               ]}
               onPress={() => formikSubmit(values)}
               disabled={isLoading}
@@ -402,7 +422,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   submitButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,

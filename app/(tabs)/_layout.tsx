@@ -7,7 +7,7 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -16,29 +16,29 @@ export default function TabLayout() {
 
   return (
     <Tabs
-    initialRouteName="home"
-  screenOptions={{
-    tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-    headerShown: false,
-    tabBarButton: HapticTab,
-    tabBarBackground: TabBarBackground,
-    tabBarStyle: Platform.select({
-      ios: {
-        position: "absolute",
-        backgroundColor: "white", // White background
-        elevation: 0, // Removes shadow on Android
-        borderTopWidth: 0,
-        height: 50, // Removes top border
-      },
-      default: {
-        backgroundColor: "white", // White background
-        elevation: 0, // Removes shadow on Android
-        borderTopWidth: 0, // Removes top border
-        height: 50,
-      },
-    }),
-  }}
->
+      initialRouteName="home"
+      screenOptions={{
+        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        headerShown: false,
+        tabBarButton: HapticTab,
+        tabBarBackground: TabBarBackground,
+        tabBarStyle: Platform.select({
+          ios: {
+            position: "absolute",
+            backgroundColor: "white", // White background
+            elevation: 0, // Removes shadow on Android
+            borderTopWidth: 0,
+            height: 50, // Removes top border
+          },
+          default: {
+            backgroundColor: "white", // White background
+            elevation: 0, // Removes shadow on Android
+            borderTopWidth: 0, // Removes top border
+            height: 50,
+          },
+        }),
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{
@@ -56,7 +56,11 @@ export default function TabLayout() {
           title: "Chat",
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
-            <Ionicons name="chatbubble-ellipses-outline" size={24} color={color} />
+            <Ionicons
+              name="chatbubble-ellipses-outline"
+              size={24}
+              color={color}
+            />
           ),
           tabBarActiveTintColor: "#3E69FE",
         }}

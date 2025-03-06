@@ -12,12 +12,11 @@ import { useRouter } from "expo-router";
 
 const HeadstonesList = ({ title, items }) => {
   const router = useRouter();
-  console.log("items",items);
-  
+  console.log("items", items);
+
   const windowWidth = Dimensions.get("window").width;
 
-  const handlePress = (item) => {
-  };
+  const handlePress = (item) => {};
 
   const renderItem = ({ item }) => {
     return (
@@ -28,7 +27,8 @@ const HeadstonesList = ({ title, items }) => {
         ]}
         onPress={() => handlePress(item)}
         activeOpacity={0.9}
-      >``
+      >
+        ``
         <Image source={{ uri: item.image }} style={styles.image} />
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.priceRange}>start from: ${item.priceRange}</Text>
@@ -50,7 +50,6 @@ const HeadstonesList = ({ title, items }) => {
         numColumns={2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContainer}
-       
       />
     </View>
   );
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
   row: {
     justifyContent: "space-evenly",
     marginBottom: 10,
-    gap:10
+    gap: 10,
   },
   card: {
     backgroundColor: "#fff",
@@ -83,7 +82,6 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 10,
     alignItems: "center",
-    
   },
   image: {
     width: "100%",

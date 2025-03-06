@@ -4,15 +4,16 @@
     "jsx": "react",
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/AuthContext/AuthContext.js", "app/AuthContext/SocketContext.js", "app/AuthContext/WebSocketService.js"  ]
+    "expo-env.d.ts",
+    "app/AuthContext/AuthContext.js",
+    "app/AuthContext/SocketContext.js",
+    "app/AuthContext/WebSocketService.js"
+  ]
 }

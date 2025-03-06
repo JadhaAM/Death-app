@@ -13,7 +13,6 @@ const Listings = () => {
 
   const parsedList = list ? JSON.parse(list) : [];
 
- 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
